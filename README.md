@@ -3,7 +3,7 @@ River
 
 River is the successor to Creek it's designed for running efficient queries over unbounded streams of data.
 
-There's nothing here yet but the goal is to support the following example syntax...
+There's not a lot here yet but the the following example will probably work...
 
     river = require('river')
 
@@ -14,7 +14,7 @@ There's nothing here yet but the goal is to support the following example syntax
     # You can add queries to a context using the addQuery function,
     # each query should also provide a callback to be run when data changes
     # the callback gets to objects, the newValues that have appeared and the oldValues that have gone
-    queryId = ctx.addQuery( "SELECT foo FROM my_stream:window(1 sec)", (newValues, oldValues) -> console.log(arguments) )
+    queryId = ctx.addQuery( "SELECT foo FROM my_stream WHERE foo > 2", (newValues, oldValues) -> console.log(arguments) )
 
     # The push function is used to add data to a stream
     # streams can be considered similar to tables in a traditional RDBMS
@@ -26,4 +26,38 @@ There's nothing here yet but the goal is to support the following example syntax
     # 
     ctx.removeQuery(queryId)
 
-    ctx.destroy()
+
+Currently Working Things
+------------------------
+
+* SELECT * FROM data
+* SELECT a, b FROM data
+* SELECT a AS b FROM data
+* SELECT * FROM data WHERE a = 1 AND b > 5
+* SELECT * FROM data LIMIT 5
+
+
+Work In Progress
+----------------
+
+* SELECT COUNT(a) FROM data
+* SELECT a, COUNT(b) FROM data GROUP BY a
+* SELECT a, COUNT(b) FROM data GROUP BY a HAVING COUNT(b) > 2
+
+
+Planned
+-------
+
+* Time windowing
+* Event count windowing
+* Time batching
+* Sub selects
+* Joins
+
+
+Wishlist
+--------
+
+* Views
+* Persistence
+* HA Server
