@@ -19,6 +19,7 @@ queryCompiler = (query) ->
 class BasicSelect
   constructor: (query) ->
     @query = query
+    @compiledWhereConditions = new ConditionCompiler(@query.where.conditions) if @query.where
   push: (stream, record) ->
     return [null, null] unless @queryHasInterestInStream(stream)
     requestedFields = @extractFieldsFromRecord(record)
@@ -36,8 +37,7 @@ class BasicSelect
     ret
   checkConditions: (record) ->
     return true unless @query.where
-    cc = new ConditionCompiler(@query.where.conditions)
-    cc.exec(record)
+    @compiledWhereConditions.exec(record)
 
 class ConditionCompiler
   constructor: (@conditions) ->
