@@ -1,6 +1,6 @@
 parser = require('sql-parser')
 events = require("events")
-QueryPlan = require('./query_plan').QueryPlan
+{QueryPlan} = require('./query_plan')
 
 queryIdCounter = 1
 
@@ -10,8 +10,8 @@ exports.Query = class Query extends events.EventEmitter
     @parsedQuery = parser.parse(@sqlString)
     @id = queryIdCounter++
     @compiledQuery = new QueryPlan(@parsedQuery)
-  push: (stream, data) ->
-    [newValues, oldValues] = @compiledQuery.exec(stream, data)
-    @emit('update', newValues, oldValues) if newValues or oldValues
+  start: (streamManager) ->
+    @compiledQuery.on 'update', (newValues, oldValues) => @emit('update', newValues, oldValues)
+    @compiledQuery.start(streamManager)
 
 
