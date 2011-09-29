@@ -1,0 +1,24 @@
+{
+  "name": "river",
+  "description": "Creeks Big Brother",
+  "version": "0.0.1",
+  "author": {
+    "name": "Andy Kent",
+    "email": "andy@forward.co.uk"
+  },
+  "directories": { 
+    "lib" : "./lib"
+  },
+  "main": "lib/index",
+  "dependencies": {
+    "coffee-script" : "1.0.1",
+    "sql-parser"    : "0.1.0"
+  },
+  "engines": [ 
+    "node"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "http://github.com/forward/river.git"
+  }
+}
