@@ -9,14 +9,24 @@ exports.QueryPlan = class QueryPlan extends events.EventEmitter
     listener = new stages.Listen(streamManager, @query.source.value)
     listener.on 'data', (data) => @root.push(data)
   build: ->
-    @root = new stages.Project(@query.fields)
+    @root = new stages.Root()
     lastStage = @root
+    
+    # WHERE clause
     if @query.where
       filter = new stages.Filter(@query.where.conditions)
       lastStage = lastStage.pass(filter)
+    
+    # SELECT fields
+    projection = new stages.Project(@query.fields)
+    lastStage = lastStage.pass(projection)
+    
+    # LIMIT size
     if @query.limit
       limit = new stages.Limit(@query.limit.value)
       lastStage = lastStage.pass(limit)
+    
+    # OUTPUT stage
     output = new stages.Output()
     output.on 'update', (newValues, oldValues) => @emit('update', newValues, oldValues)
     lastStage.pass(output)
