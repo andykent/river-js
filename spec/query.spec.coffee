@@ -8,6 +8,15 @@ expectUpdate = (expectedNewValues=null, expectedOldValues=null) ->
     expect(newValues).toEqual(expectedNewValues)
     expect(oldValues).toEqual(expectedOldValues)
 
+expectUpdates = (expectedValues...) ->
+  callCount = 0
+  (newValues, oldValues) ->
+    [expectedNewValues, expectedOldValues] = expectedValues[callCount]
+    expect(newValues).toEqual(expectedNewValues)
+    expect(oldValues).toEqual(expectedOldValues)
+    callCount++
+  
+
 abc = { a:'a', b:'b', c:'c' }
 
 describe "Query", ->
@@ -48,5 +57,13 @@ describe "Query", ->
     ctx.addQuery "SELECT * FROM data LIMIT 1", expectUpdate([{foo:1, bar:1}], null)
     ctx.push('data', foo:1, bar:1)
     ctx.push('data', foo:2, bar:2)
+    
+  it "Compiles 'select with group' queries", ->
+    ctx = river.createContext()
+    ctx.addQuery "SELECT foo, COUNT(1) FROM data GROUP BY foo", 
+      expectUpdates([[{foo:'a', bar:1}], null], [[{foo:'b', bar:1}], null], [[{foo:'a', bar:2}], null])
+    ctx.push('data', foo:'a', bar:1)
+    ctx.push('data', foo:'b', bar:1)
+    ctx.push('data', foo:'a', bar:1)
     
     
