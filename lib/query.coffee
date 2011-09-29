@@ -9,8 +9,6 @@ exports.Query = class Query extends events.EventEmitter
     @parsedQuery = parser.parse(@sqlString)
     @id = queryIdCounter++
     @compiledQuery = queryCompiler(@parsedQuery)
-  compile: ->
-    # Epic TODO
   push: (stream, data) ->
     [newValues, oldValues] = @compiledQuery.push(stream, data)
     @emit('update', newValues, oldValues) if newValues or oldValues
@@ -38,7 +36,6 @@ class BasicSelect
     ret
   checkConditions: (record) ->
     return true unless @query.where
-    # console.log @query.where.conditions
     cc = new ConditionCompiler(@query.where.conditions)
     cc.exec(record)
 
@@ -73,6 +70,7 @@ class ConditionCompiler
       when '='    then '=='
       else
         op
+  
   convertOrCompile: (node) ->
     if node.constructor is parser.nodes.Op
       @compileNode(node)
