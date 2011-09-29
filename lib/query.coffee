@@ -20,13 +20,16 @@ class BasicSelect
   constructor: (query) ->
     @query = query
     @compiledWhereConditions = new ConditionCompiler(@query.where.conditions) if @query.where
+    @limit = if @query.limit then @query.limit.value.value else null
+    @emitCount = 0
   push: (stream, record) ->
-    return [null, null] unless @queryHasInterestInStream(stream)
+    return @noDataResponse() if @limitReached()
+    return @noDataResponse() unless @queryHasInterestInStream(stream)
     requestedFields = @extractFieldsFromRecord(record)
     if @checkConditions(requestedFields)
-      [[requestedFields], null]
+      @response([requestedFields], null)
     else
-      [null,null]
+      @noDataResponse()
   queryHasInterestInStream: (stream) -> @query.source.value is stream
   isStarQuery: -> @query.fields.length is 1 and @query.fields[0].star
   extractFieldsFromRecord: (record) ->
@@ -38,7 +41,13 @@ class BasicSelect
   checkConditions: (record) ->
     return true unless @query.where
     @compiledWhereConditions.exec(record)
-
+  limitReached: ->
+    @emitCount is @limit
+  noDataResponse: -> [null, null]
+  response: (newValues, oldValues) ->
+    @emitCount += newValues.length
+    [newValues, oldValues]
+  
 class ConditionCompiler
   constructor: (@conditions) ->
     @compile(@conditions)

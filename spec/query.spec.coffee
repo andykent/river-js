@@ -43,4 +43,10 @@ describe "Query", ->
     query.on 'update', expectUpdate([{foo:1, bar:1}], null)
     query.push('data', foo:1, bar:1)
     
+  it "Compiles 'select with limit' queries", ->
+    query = new Query("SELECT * FROM data LIMIT 1")
+    query.on 'update', expectUpdate([{foo:1, bar:1}], null)
+    query.push('data', foo:1, bar:1)
+    query.push('data', foo:2, bar:2)
+    
     
