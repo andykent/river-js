@@ -10,10 +10,10 @@
     "lib" : "./lib"
   },
   "main": "lib/index",
-  "bin": [
-    "bin/river-csv",
-    "bin/river-zmq"
-  ],
+  "bin": {
+    "river-csv": "bin/river-csv",
+    "river-zmq": "bin/river-zmq"
+  },
   "dependencies": {
     "coffee-script" : "1.0.1",
     "sql-parser"    : "0.1.1"
