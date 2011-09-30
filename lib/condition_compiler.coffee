@@ -17,9 +17,12 @@ exports.ConditionCompiler = class ConditionCompiler
   compileNode: (condition) ->
     left = @convertOrCompile(condition.left)
     right = @convertOrCompile(condition.right)
-    op = @conditionConversion(condition.operation)
-    compiledString = ['(', left, op, right, ')'].join(' ')
-    compiledString
+    if condition.operation is 'LIKE'
+      "#{@likeRegex(condition.right)}.test(#{left})"
+    else
+      op = @conditionConversion(condition.operation)
+      ['(', left, op, right, ')'].join(' ')
+    
   
   literalConversion: (node) ->
     if node.constructor is nodes.LiteralValue
@@ -31,6 +34,10 @@ exports.ConditionCompiler = class ConditionCompiler
       else
         val
       
+  likeRegex: (node) ->
+    r = node.value.replace(/%/g, '.+')
+    "/^#{r}$/"
+  
   conditionConversion: (op) ->
     switch op
       when 'AND'  then '&&'

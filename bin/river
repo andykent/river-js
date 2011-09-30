@@ -8,8 +8,7 @@ zmq = require('zmq')
 
 
 url = process.argv[2]
-channel = process.argv[3]
-query = process.argv[4]
+query = process.argv[3]
 
 ctx = river.createContext()
 
@@ -21,13 +20,15 @@ ctx.addQuery query, (newValues, oldValues) ->
   console.log("[OLD] #{JSON.stringify(v)}") for v in oldValues if oldValues?
 
 
-console.log("*** Connecting to: #{channel} @ #{url} ***")
+console.log("*** Connecting to: #{url} ***")
 
 socket = zmq.createSocket('sub')
 socket.connect(url)
-socket.subscribe(channel)
+socket.subscribe('')
 
 
 socket.on 'message', (ch, data) ->
   msg = JSON.parse(data.toString('utf8'))
-  ctx.push('stream', msg)
+  # bit of a hack to change streams to use underscores instead of dashes as they aren't valid sql tables names
+  table = ch.toString('utf8').replace(/\-/g, '_')
+  ctx.push(table, msg)

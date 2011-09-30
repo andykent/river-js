@@ -41,6 +41,15 @@ describe "Query", ->
     ctx.push('data', foo:2)
     ctx.push('data', foo:1)
 
+  it "Compiles 'LIKE' queries", ->
+    ctx = river.createContext()
+    ctx.addQuery "SELECT * FROM data WHERE foo LIKE '%bar%'", expectUpdate([{foo:1}], null)
+    expectUpdates([[{foo:'xbarx'}], null], [[{foo:'zbarz'}], null])
+    ctx.push('data', foo:'car')
+    ctx.push('data', foo:'bar')
+    ctx.push('data', foo:'xbarx')
+    ctx.push('data', foo:'zbarz')
+
   it "Compiles 'select * WHERE AND' queries", ->
     ctx = river.createContext()
     ctx.addQuery "SELECT * FROM data WHERE foo = 1 AND bar = 2", expectUpdate([{foo:1, bar:2}], null)
