@@ -3,7 +3,12 @@
 process.title = 'river'
 
 river = require('./../lib/river')
-zmq = require('zmq')
+
+try
+  zmq = require('zmq')
+catch e
+  console.log("MISSING zmq LIB! Please `brew install zeromq` and `npm install -g zmq`")
+  process.exit(1)
 
 
 
