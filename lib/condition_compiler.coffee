@@ -25,7 +25,11 @@ exports.ConditionCompiler = class ConditionCompiler
     if node.constructor is nodes.LiteralValue
       "c['#{node.value}']"
     else
-      node.value
+      val = node.value
+      if typeof val is 'string'
+        "'#{val}'"
+      else
+        val
       
   conditionConversion: (op) ->
     switch op
