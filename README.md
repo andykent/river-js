@@ -30,19 +30,21 @@ There's not a lot here yet but the the following example will probably work...
 Currently Working Things
 ------------------------
 
-* SELECT * FROM data
-* SELECT a, b FROM data
-* SELECT a AS b FROM data
-* SELECT * FROM data WHERE a = 1 AND b > 5
-* SELECT * FROM data LIMIT 5
+* `SELECT * FROM data`
+* `SELECT a, b FROM data`
+* `SELECT a AS b FROM data`
+* `SELECT * FROM data WHERE a = 1 AND b > 5`
+* `SELECT * FROM data LIMIT 5`
+* `SELECT DISTINCT a FROM data`
+* `SELECT COUNT(a) FROM data`
 
 
 Work In Progress
 ----------------
 
-* SELECT COUNT(a) FROM data
-* SELECT a, COUNT(b) FROM data GROUP BY a
-* SELECT a, COUNT(b) FROM data GROUP BY a HAVING COUNT(b) > 2
+* Other functions `MIN`, `MAX`, etc...
+* `SELECT a, COUNT(b) FROM data GROUP BY a`
+* `SELECT a, COUNT(b) FROM data GROUP BY a HAVING COUNT(b) > 2`
 
 
 Planned

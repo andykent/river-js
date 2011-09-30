@@ -72,6 +72,14 @@ describe "Query", ->
     ctx.push('data', foo:2, bar:1)
     ctx.push('data', foo:2, bar:1)
     
+  it "Compiles 'select DISTINCT' queries", ->
+    ctx = river.createContext()
+    ctx.addQuery "SELECT DISTINCT foo FROM data",
+      expectUpdates([[{foo:1}], null], [[{foo:2}], null])
+    ctx.push('data', foo:1, bar:1)
+    ctx.push('data', foo:1, bar:2)
+    ctx.push('data', foo:2, bar:1)
+    
   # it "Compiles 'select with group' queries", ->
   #   ctx = river.createContext()
   #   ctx.addQuery "SELECT foo, COUNT(1) FROM data GROUP BY foo", 

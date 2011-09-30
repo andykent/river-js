@@ -11,7 +11,7 @@ exports.QueryPlan = class QueryPlan extends events.EventEmitter
   build: ->
     @root = new stages.Root()
     lastStage = @root
-    
+        
     # WHERE clause
     if @query.where
       filter = new stages.Filter(@query.where.conditions)
@@ -25,6 +25,11 @@ exports.QueryPlan = class QueryPlan extends events.EventEmitter
     # SELECT fields
     projection = new stages.Project(@query.fields)
     lastStage = lastStage.pass(projection)
+    
+    # SELECT DISTINCT
+    if @query.distinct
+      distinct = new stages.Distinct()
+      lastStage = lastStage.pass(distinct)
     
     # LIMIT size
     if @query.limit
