@@ -1,0 +1,33 @@
+#!/usr/bin/env coffee
+
+process.title = 'river'
+
+river = require('./../lib/river')
+zmq = require('zmq')
+
+
+
+url = process.argv[2]
+channel = process.argv[3]
+query = process.argv[4]
+
+ctx = river.createContext()
+
+console.log("*** Registering Query ***")
+console.log(query)
+
+ctx.addQuery query, (newValues, oldValues) ->
+  console.log("[NEW] #{JSON.stringify(v)}") for v in newValues if newValues?
+  console.log("[OLD] #{JSON.stringify(v)}") for v in oldValues if oldValues?
+
+
+console.log("*** Connecting to: #{channel} @ #{url} ***")
+
+socket = zmq.createSocket('sub')
+socket.connect(url)
+socket.subscribe(channel)
+
+
+socket.on 'message', (ch, data) ->
+  msg = JSON.parse(data.toString('utf8'))
+  ctx.push('stream', msg)
