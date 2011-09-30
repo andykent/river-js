@@ -4,11 +4,9 @@ exports.Group = class Group extends BaseStage
 
   constructor: (group) ->
     @fields = group.fields
-    @groups = {}
   
   push: (data) ->
-    key = @makeKey(data)
-    @groups[key] = data
+    data['__bucket__'] = @makeKey(data)
     @nextStage.push(data)
   
   makeKey: (record) ->

@@ -17,14 +17,14 @@ exports.QueryPlan = class QueryPlan extends events.EventEmitter
       filter = new stages.Filter(@query.where.conditions)
       lastStage = lastStage.pass(filter)
     
-    # SELECT fields
-    projection = new stages.Project(@query.fields)
-    lastStage = lastStage.pass(projection)
-    
     # GROUP BY fields
     if @query.group
       group = new stages.Group(@query.group)
       lastStage = lastStage.pass(group)
+    
+    # SELECT fields
+    projection = new stages.Project(@query.fields)
+    lastStage = lastStage.pass(projection)
     
     # LIMIT size
     if @query.limit

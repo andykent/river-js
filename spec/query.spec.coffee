@@ -58,12 +58,26 @@ describe "Query", ->
     ctx.push('data', foo:1, bar:1)
     ctx.push('data', foo:2, bar:2)
     
-  it "Compiles 'select with group' queries", ->
+  it "Compiles 'select with count(1)' queries", ->
     ctx = river.createContext()
-    ctx.addQuery "SELECT foo, COUNT(1) FROM data GROUP BY foo", 
-      expectUpdates([[{foo:'a', bar:1}], null], [[{foo:'b', bar:1}], null], [[{foo:'a', bar:2}], null])
+    ctx.addQuery "SELECT COUNT(1) FROM data", 
+      expectUpdates([[{'COUNT(1)':1}], null], [[{'COUNT(1)':2}], null])
     ctx.push('data', foo:'a', bar:1)
     ctx.push('data', foo:'b', bar:1)
-    ctx.push('data', foo:'a', bar:1)
+    
+  it "Compiles 'select with count(field)' queries", ->
+    ctx = river.createContext()
+    ctx.addQuery "SELECT COUNT(foo) AS foo_count FROM data", 
+      expectUpdates([[{foo_count:2}], null], [[{foo_count:4}], null])
+    ctx.push('data', foo:2, bar:1)
+    ctx.push('data', foo:2, bar:1)
+    
+  # it "Compiles 'select with group' queries", ->
+  #   ctx = river.createContext()
+  #   ctx.addQuery "SELECT foo, COUNT(1) FROM data GROUP BY foo", 
+  #     expectUpdates([[{foo:'a', 'COUNT(1)':1}], null], [[{foo:'b', 'COUNT(1)':1}], null], [[{foo:'a', 'COUNT(1)':2}], null])
+  #   ctx.push('data', foo:'a', bar:1)
+  #   ctx.push('data', foo:'b', bar:1)
+  #   ctx.push('data', foo:'a', bar:1)
     
     
