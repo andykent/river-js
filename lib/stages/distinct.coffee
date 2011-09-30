@@ -7,6 +7,6 @@ exports.Distinct = class Distinct extends BaseStage
   
   push: (data) ->
     key = JSON.stringify(data)
-    return if @seen.indexOf(key)
+    return if @seen.indexOf(key) > -1
     @seen.push(key)
     @nextStage.push(data)
