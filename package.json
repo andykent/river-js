@@ -1,7 +1,7 @@
 {
   "name": "river",
   "description": "Creeks Big Brother",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "author": {
     "name": "Andy Kent",
     "email": "andy@forward.co.uk"
@@ -10,7 +10,10 @@
     "lib" : "./lib"
   },
   "main": "lib/index",
-  "bin": "bin/river",
+  "bin": [
+    "bin/river-csv",
+    "bin/river-zmq"
+  ],
   "dependencies": {
     "coffee-script" : "1.0.1",
     "sql-parser"    : "0.1.1"

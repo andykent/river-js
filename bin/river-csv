@@ -1,0 +1,46 @@
+#!/usr/bin/env coffee
+
+process.title = 'river'
+
+fs = require('fs')
+river = require('./../lib/river')
+
+file = process.argv[2]
+query = process.argv[3]
+
+partialData = ''
+lineSeperator = "\n"
+colSeperator = ","
+headers = []
+
+
+ctx = river.createContext()
+
+ctx.addQuery query, (newValues, oldValues) ->
+  if newValues?
+    for o in newValues
+      row = []
+      for header in headers
+        val = o[header]
+        row.push(val) if val
+      console.log(row.join(colSeperator))
+
+
+fs.readFile file, 'utf8', (err, data) ->
+  if err
+    console.log(err)
+    process.exit(1)
+  partialData += data
+  parts = partialData.split(lineSeperator)
+  partialData = parts.pop() # last part will be an incomplete chunk or an empty string if we are lucky
+  for chunk in parts when chunk
+    cols = chunk.split(colSeperator)
+    if headers.length > 0
+      input = {}
+      i = 0
+      for header in headers
+        input[header] = cols[i]
+        i++
+      ctx.push('file', input)
+    else
+      headers = cols
