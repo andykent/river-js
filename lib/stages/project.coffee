@@ -1,5 +1,6 @@
 {BaseStage} = require('./base')
 functions = require('./../functions')
+udfs = require('./../udfs')
 nodes = require('sql-parser').nodes
 
 
@@ -32,7 +33,11 @@ exports.Project = class Project extends BaseStage
   fieldValue: (field, record) ->
     if @fieldIsFunction(field.field)
       fn = @functions[@fieldName(field)]
-      fn.push(record)
+      if field.field.udf
+        
+        fn.apply(record, @buildFnArgs(field.field.arguments, record))
+      else
+        fn.push(record)
     else
       record[field.field.value]
   
@@ -42,10 +47,18 @@ exports.Project = class Project extends BaseStage
   initFunctions: () ->
     @functions = {}
     for field in @fields when @fieldIsFunction(field.field)
-      klass = functions.get(field.field.name)
-      instance = new klass(field.field.arguments)
-      @functions[@fieldName(field)] = instance
+      if field.field.udf
+        @functions[@fieldName(field)] = udfs.get(field.field.name)
+      else
+        klass = functions.get(field.field.name)
+        instance = new klass(field.field.arguments)
+        @functions[@fieldName(field)] = instance
       
       
-      
-      
+  buildFnArgs: (args, record) ->
+    fnArgs = []
+    for arg in args
+      switch arg.constructor 
+        when nodes.NumberValue  then arg.value
+        when nodes.LiteralValue then record[arg.value]
+        else arg.value

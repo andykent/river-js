@@ -88,7 +88,13 @@ describe "Query", ->
     ctx.push('data', foo:1, bar:1)
     ctx.push('data', foo:1, bar:2)
     ctx.push('data', foo:2, bar:1)
-    
+  
+  it "Compiles User Defined Functions", ->
+    ctx = river.createContext()
+    ctx.addQuery "SELECT LENGTH(foo) as foo_l FROM data", expectUpdate([{foo_l:3}], null)
+    ctx.push('data', foo:'bar')
+
+  
   # it "Compiles 'select with group' queries", ->
   #   ctx = river.createContext()
   #   ctx.addQuery "SELECT foo, COUNT(1) FROM data GROUP BY foo", 

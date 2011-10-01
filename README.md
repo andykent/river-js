@@ -39,10 +39,16 @@ Currently Working Things
 * `SELECT COUNT(a) FROM data`
 
 
+Supported Functions
+-------------------
+Aggregates: `COUNT`
+Standard: `LENGTH`
+
+
 Work In Progress
 ----------------
 
-* Other functions `MIN`, `MAX`, etc...
+* Other functions `MIN`, `MAX`, `CONCAT` etc...
 * `SELECT a, COUNT(b) FROM data GROUP BY a`
 * `SELECT a, COUNT(b) FROM data GROUP BY a HAVING COUNT(b) > 2`
 
