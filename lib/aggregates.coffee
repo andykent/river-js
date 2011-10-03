@@ -1,4 +1,4 @@
-availableFunctions = ['COUNT']
+availableFunctions = ['COUNT', 'MIN', 'MAX']
 functions = {}
 for f in availableFunctions
   functions[f] = require("./aggregates/#{f.toLowerCase()}").fn

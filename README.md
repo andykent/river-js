@@ -48,7 +48,7 @@ Standard: `ABS`, `CEIL`, `CONCAT`, `FLOOR`, `IF`, `LENGTH`, `LOG`, `LOWER`, `ROU
 Work In Progress
 ----------------
 
-* Other functions `MIN`, `MAX`, `CONCAT` etc...
+* Other functions `MIN`, `MAX`, etc...
 * `SELECT a, COUNT(b) FROM data GROUP BY a`
 * `SELECT a, COUNT(b) FROM data GROUP BY a HAVING COUNT(b) > 2`
 

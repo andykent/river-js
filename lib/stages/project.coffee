@@ -34,7 +34,6 @@ exports.Project = class Project extends BaseStage
     if @fieldIsFunction(field.field)
       fn = @functions[@fieldName(field)]
       if field.field.udf
-        
         fn.apply(record, @buildFnArgs(field.field.arguments, record))
       else
         fn.push(record)

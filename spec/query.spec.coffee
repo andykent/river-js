@@ -81,6 +81,13 @@ describe "Query", ->
     ctx.push('data', foo:2, bar:1)
     ctx.push('data', foo:2, bar:1)
     
+  it "Compiles 'select with min(field)' queries", ->
+    ctx = river.createContext()
+    ctx.addQuery "SELECT MIN(foo) AS foo_min FROM data", 
+      expectUpdates([[{foo_min:3}], null], [[{foo_min:2}], null])
+    ctx.push('data', foo:3)
+    ctx.push('data', foo:2)
+    
   it "Compiles 'select DISTINCT' queries", ->
     ctx = river.createContext()
     ctx.addQuery "SELECT DISTINCT foo FROM data",
