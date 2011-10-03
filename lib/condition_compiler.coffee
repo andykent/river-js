@@ -1,4 +1,6 @@
 nodes = require('sql-parser').nodes
+functions = require('./functions')
+
 
 
 exports.ConditionCompiler = class ConditionCompiler
@@ -6,12 +8,11 @@ exports.ConditionCompiler = class ConditionCompiler
     @compile(@conditions)
   
   exec: (context) ->
-    @compiledConditions(context)
+    @compiledConditions(context, functions)
   
   compile: (condition) ->
     compiledString = @compileNode(condition)
-    # console.log(compiledString)
-    compiledFunction = new Function('c', "return #{compiledString}")
+    compiledFunction = new Function('c', 'f', "return #{compiledString}")
     @compiledConditions = compiledFunction
   
   compileNode: (condition) ->
@@ -25,14 +26,19 @@ exports.ConditionCompiler = class ConditionCompiler
     
   
   literalConversion: (node) ->
-    if node.constructor is nodes.LiteralValue
-      "c['#{node.value}']"
-    else
-      val = node.value
-      if typeof val is 'string'
-        "'#{val}'"
+    switch node.constructor 
+      when nodes.LiteralValue
+        "c['#{node.value}']"
+      when nodes.FunctionValue
+        fn = "f.get('#{node.name}')"
+        args = (@literalConversion(arg) for arg in node.arguments)
+        "#{fn}(#{args})"
       else
-        val
+        val = node.value
+        if typeof val is 'string'
+          "'#{val}'"
+        else
+          val
       
   likeRegex: (node) ->
     r = node.value.replace(/%/g, '.+')

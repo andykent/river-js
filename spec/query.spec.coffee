@@ -93,6 +93,12 @@ describe "Query", ->
     ctx = river.createContext()
     ctx.addQuery "SELECT LENGTH(foo) as foo_l FROM data", expectUpdate([{foo_l:3}], null)
     ctx.push('data', foo:'bar')
+  
+  it "Compiles User Defined Functions in conditions", ->
+    ctx = river.createContext()
+    ctx.addQuery "SELECT foo FROM data WHERE LENGTH(foo) > 2", expectUpdate([{foo:'yes'}], null)
+    ctx.push('data', foo:'no')
+    ctx.push('data', foo:'yes')
 
   
   # it "Compiles 'select with group' queries", ->

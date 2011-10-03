@@ -2,7 +2,9 @@ river = require('../lib/river')
 
 ctx = river.createContext()
 
-ctx.addQuery "SELECT * FROM random WHERE n > 0.599 AND n < 0.6", 
+# ctx.addFunction 'FOO', (x) -> 'FOO'
+
+ctx.addQuery "SELECT * FROM random WHERE n > 0.599 AND n < 0.6",
   (newValues) -> console.log(newValues)
 
 loop
