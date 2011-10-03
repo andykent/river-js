@@ -1,0 +1,1 @@
+exports.fn = (n) -> Math.log(n)

@@ -1,4 +1,4 @@
-availableFunctions = ['LENGTH']
+availableFunctions = 'ABS CEIL CONCAT FLOOR IF LENGTH LOG LOWER ROUND SUBSTR UPPER'.split(' ')
 functions = {}
 for f in availableFunctions
   functions[f] = require("./functions/#{f.toLowerCase()}").fn

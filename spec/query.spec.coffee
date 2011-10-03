@@ -89,15 +89,20 @@ describe "Query", ->
     ctx.push('data', foo:1, bar:2)
     ctx.push('data', foo:2, bar:1)
   
-  it "Compiles User Defined Functions", ->
+  it "Compiles Functions", ->
     ctx = river.createContext()
     ctx.addQuery "SELECT LENGTH(foo) as foo_l FROM data", expectUpdate([{foo_l:3}], null)
     ctx.push('data', foo:'bar')
   
-  it "Compiles User Defined Functions in conditions", ->
+  it "Compiles Functions in conditions", ->
     ctx = river.createContext()
     ctx.addQuery "SELECT foo FROM data WHERE LENGTH(foo) > 2", expectUpdate([{foo:'yes'}], null)
     ctx.push('data', foo:'no')
+    ctx.push('data', foo:'yes')
+  
+  it "Compiles IF conditions", ->
+    ctx = river.createContext()
+    ctx.addQuery "SELECT IF(foo, 1, 2) AS f FROM data", expectUpdate([{f:1}], null)
     ctx.push('data', foo:'yes')
 
   
