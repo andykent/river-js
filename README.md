@@ -42,7 +42,7 @@ Currently Working Things
 Supported Functions
 -------------------
 Aggregates: `COUNT`
-Standard: `LENGTH`
+Standard: `ABS`, `CEIL`, `CONCAT`, `FLOOR`, `IF`, `LENGTH`, `LOG`, `LOWER`, `ROUND`, `SUBSTR`, `UPPER`
 
 
 Work In Progress
