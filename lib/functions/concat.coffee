@@ -1,0 +1,1 @@
+exports.fn = (args...) -> args.join()

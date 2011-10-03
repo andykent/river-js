@@ -1,0 +1,1 @@
+exports.fn = (str) -> str.toLowerCase()

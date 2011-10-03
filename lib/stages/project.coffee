@@ -1,6 +1,6 @@
 {BaseStage} = require('./base')
 functions = require('./../functions')
-udfs = require('./../udfs')
+aggregates = require('./../aggregates')
 nodes = require('sql-parser').nodes
 
 
@@ -48,9 +48,9 @@ exports.Project = class Project extends BaseStage
     @functions = {}
     for field in @fields when @fieldIsFunction(field.field)
       if field.field.udf
-        @functions[@fieldName(field)] = udfs.get(field.field.name)
+        @functions[@fieldName(field)] = functions.get(field.field.name)
       else
-        klass = functions.get(field.field.name)
+        klass = aggregates.get(field.field.name)
         instance = new klass(field.field.arguments)
         @functions[@fieldName(field)] = instance
       
