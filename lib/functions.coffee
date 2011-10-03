@@ -5,6 +5,6 @@ for f in availableFunctions
 
 exports.get = (functionName) ->
   f = functions[functionName]
-  throw(new Error("UNKNOWN FUNCTION")) unless f
+  throw(new Error("UNKNOWN FUNCTION: #{functionName}")) unless f
   f
   
