@@ -6,7 +6,7 @@ exports.QueryPlan = class QueryPlan extends events.EventEmitter
     @query = query
     @build()
   start: (streamManager) ->
-    listener = new stages.Listen(streamManager, @query.source.value)
+    listener = new stages.Listen(streamManager, @query.source.name.value)
     listener.on 'data', (data) => @root.push(data)
   build: ->
     @root = new stages.Root()
