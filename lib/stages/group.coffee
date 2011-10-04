@@ -3,7 +3,7 @@
 exports.Group = class Group extends BaseStage
 
   constructor: (group) ->
-    @fields = group.fields
+    @groupingFields = group.fields
   
   push: (data) ->
     data['__bucket__'] = @makeKey(data)
@@ -11,7 +11,7 @@ exports.Group = class Group extends BaseStage
   
   makeKey: (record) ->
     ret = {}
-    for field in @fields
+    for field in @groupingFields
       ret[field.value] = record[field.value]
     JSON.stringify(ret)
   
