@@ -1,0 +1,1 @@
+exports.fn = (o) -> o.toString()
