@@ -1,4 +1,4 @@
-nodes = require('sql-parser').nodes
+support = require('./../support')
 
 class Max
 
@@ -9,14 +9,8 @@ class Max
     
   push: (record) ->
     oldMax = @max
-    val = @valueFor(record)
+    val = support.valueForField(@field, record)
     @max = val if @max is null or val > @max
     @max unless @max is oldMax
-  
-  valueFor: (record) ->
-    if @field.constructor is nodes.NumberValue
-      @field.value
-    else
-      record[@field.value]
   
 exports.fn = Max

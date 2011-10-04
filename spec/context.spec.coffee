@@ -3,8 +3,9 @@ river = require('../lib/river')
 describe "Context", ->  
   it "allows adding queries and gives each incremental IDs", ->
     ctx = river.createContext()
-    id = ctx.addQuery("SELECT * FROM data1")
-    expect(ctx.addQuery("SELECT * FROM data2")).toEqual(id+1)
+    q1 = ctx.addQuery("SELECT * FROM data1")
+    q2 = ctx.addQuery("SELECT * FROM data2")
+    expect(q2.id).toEqual(q1.id+1)
 
   it "allows pushing data into a context", ->
     ctx = river.createContext()

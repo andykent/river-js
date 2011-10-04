@@ -1,4 +1,4 @@
-nodes = require('sql-parser').nodes
+support = require('./../support')
 
 class Count
 
@@ -9,13 +9,8 @@ class Count
     
   push: (record) ->
     oldCount = @count
-    @count += @valueFor(record)
+    val = support.valueForField(@field, record)
+    @count += val
     @count unless @count is oldCount
-  
-  valueFor: (record) ->
-    if @field.constructor is nodes.NumberValue
-      @field.value
-    else
-      record[@field.value]
   
 exports.fn = Count

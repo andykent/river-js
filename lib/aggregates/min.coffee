@@ -1,4 +1,4 @@
-nodes = require('sql-parser').nodes
+support = require('./../support')
 
 class Min
 
@@ -9,14 +9,8 @@ class Min
     
   push: (record) ->
     oldMin = @min
-    val = @valueFor(record)
+    val = support.valueForField(@field, record)
     @min = val if @min is null or val < @min
     @min unless @min is oldMin
-  
-  valueFor: (record) ->
-    if @field.constructor is nodes.NumberValue
-      @field.value
-    else
-      record[@field.value]
   
 exports.fn = Min

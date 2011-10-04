@@ -104,6 +104,11 @@ describe "Query", ->
     ctx.addQuery "SELECT LENGTH(foo) as foo_l FROM data", expectUpdate([{foo_l:3}], null)
     ctx.push('data', foo:'bar')
   
+  it "Compiles nested Functions", ->
+    ctx = river.createContext()
+    ctx.addQuery "SELECT MAX(NUMBER(foo)) as bar FROM data", expectUpdate([{bar:3}], null)
+    ctx.push('data', foo:'3')
+  
   it "Compiles Functions in conditions", ->
     ctx = river.createContext()
     ctx.addQuery "SELECT foo FROM data WHERE LENGTH(foo) > 2", expectUpdate([{foo:'yes'}], null)

@@ -11,7 +11,7 @@ exports.Context = class Context
     query.on('update', callback)
     query.start(@streamManager)
     @queries.push(query)
-    query.id
+    query
   push: (streamName, data) ->
     @streamManager.fetch(streamName).push(data)
     true

@@ -13,5 +13,6 @@ exports.Query = class Query extends events.EventEmitter
   start: (streamManager) ->
     @compiledQuery.on 'update', (newValues, oldValues) => @emit('update', newValues, oldValues)
     @compiledQuery.start(streamManager)
+  toString: -> @parsedQuery.toString()
 
 

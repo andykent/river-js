@@ -18,12 +18,12 @@ query = process.argv[3]
 ctx = river.createContext()
 
 console.log("*** Registering Query ***")
-console.log(query)
 
-ctx.addQuery query, (newValues, oldValues) ->
+q = ctx.addQuery query, (newValues, oldValues) ->
   console.log("[NEW] #{JSON.stringify(v)}") for v in newValues if newValues?
   console.log("[OLD] #{JSON.stringify(v)}") for v in oldValues if oldValues?
 
+console.log(q.toString())
 
 console.log("*** Connecting to: #{url} ***")
 
