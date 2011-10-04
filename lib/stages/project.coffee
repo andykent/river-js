@@ -8,11 +8,15 @@ exports.Project = class Project extends BaseStage
 
   constructor: (fields) ->
     @fields = fields
+    @hasAggregation = false
+    @aggDataChange = false
     @initFunctions()
   
   push: (data) ->
+    @aggDataChange = false
     projectedData = @extractFieldsFromRecord(data)
-    @nextStage.push(projectedData)
+    if @hasAggregation is false or @aggDataChange is true
+      @nextStage.push(projectedData)
     
   isStarQuery: -> 
     @fields.length is 1 and @fields[0].star
@@ -36,7 +40,9 @@ exports.Project = class Project extends BaseStage
       if field.field.udf
         fn.apply(record, @buildFnArgs(field.field.arguments, record))
       else
-        fn.push(record)
+        val = fn.push(record)
+        @aggDataChange = true if val?
+        val
     else
       record[field.field.value]
   
@@ -49,6 +55,7 @@ exports.Project = class Project extends BaseStage
       if field.field.udf
         @functions[@fieldName(field)] = functions.get(field.field.name)
       else
+        @hasAggregation = true
         klass = aggregates.get(field.field.name)
         instance = new klass(field.field.arguments)
         @functions[@fieldName(field)] = instance

@@ -11,7 +11,7 @@ class Min
     oldMin = @min
     val = @valueFor(record)
     @min = val if @min is null or val < @min
-    @min
+    @min unless @min is oldMin
   
   valueFor: (record) ->
     if @field.constructor is nodes.NumberValue

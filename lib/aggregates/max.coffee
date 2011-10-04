@@ -11,7 +11,7 @@ class Max
     oldMax = @max
     val = @valueFor(record)
     @max = val if @max is null or val > @max
-    @max
+    @max unless @max is oldMax
   
   valueFor: (record) ->
     if @field.constructor is nodes.NumberValue

@@ -85,7 +85,10 @@ describe "Query", ->
     ctx = river.createContext()
     ctx.addQuery "SELECT MIN(foo) AS foo_min FROM data", 
       expectUpdates([[{foo_min:3}], null], [[{foo_min:2}], null])
+      # TODO: The expectation should actually be this, as it should include the old value too.
+      # expectUpdates([[{foo_min:3}], null], [[{foo_min:2}], [{foo_min:3}]])
     ctx.push('data', foo:3)
+    ctx.push('data', foo:4)
     ctx.push('data', foo:2)
     
   it "Compiles 'select DISTINCT' queries", ->
