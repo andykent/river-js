@@ -41,7 +41,10 @@ exports.ConditionCompiler = class ConditionCompiler
           val
       
   likeRegex: (node) ->
-    r = node.value.replace(/%/g, '.+')
+    # escape regex chars
+    r = node.value.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&")
+    # replace % sign with wildcard regex
+    r = r.replace(/%/g, '.+')
     "/^#{r}$/"
   
   conditionConversion: (op) ->
