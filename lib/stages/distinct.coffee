@@ -5,7 +5,7 @@ exports.Distinct = class Distinct extends BaseStage
   constructor: ->
     @seen = []
   
-  push: (data) ->
+  insert: (data) ->
     key = JSON.stringify(data)
     return if @seen.indexOf(key) > -1
     @seen.push(key)

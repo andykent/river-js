@@ -12,7 +12,7 @@ exports.Project = class Project extends BaseStage
     @aggDataChange = false
     @initFunctions()
   
-  push: (data) ->
+  insert: (data) ->
     @aggDataChange = false
     projectedData = @extractFieldsFromRecord(data)
     if @hasAggregation is false or @aggDataChange is true

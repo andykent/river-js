@@ -5,7 +5,7 @@ exports.Group = class Group extends BaseStage
   constructor: (group) ->
     @groupingFields = group.fields
   
-  push: (data) ->
+  insert: (data) ->
     data['__bucket__'] = @makeKey(data)
     @emit('insert', data)
   

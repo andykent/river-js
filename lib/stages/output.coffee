@@ -3,6 +3,8 @@ events = require("events")
 
 exports.Output = class Output extends events.EventEmitter
 
-  push: (newValues, oldValues=null) ->
+  insert: (newValues) ->
     @emit('insert', newValues) if newValues
+  
+  remove: (oldValues) ->
     @emit('remove', oldValues) if oldValues

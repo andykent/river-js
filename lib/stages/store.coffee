@@ -8,7 +8,7 @@ exports.Store = class Store extends BaseStage
     @limitBy = tableDef.winFn
     @limitValue = tableDef.winArg.value
     @db = []
-  push: (data) ->
+  insert: (data) ->
     @db.push(data)
     if @db.length > @limitValue
       old = @db.shift()

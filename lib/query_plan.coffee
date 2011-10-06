@@ -8,7 +8,7 @@ exports.QueryPlan = class QueryPlan extends events.EventEmitter
   
   start: (streamManager) ->
     listener = new stages.Listen(streamManager, @query.source.name.value)
-    listener.on 'data', (data) => @root.push(data)
+    listener.on 'data', (data) => @root.insert(data)
   
   build: ->
     @root = new stages.Root()
@@ -20,7 +20,7 @@ exports.QueryPlan = class QueryPlan extends events.EventEmitter
     # OUTPUT stage
     output = new stages.Output()
     output.on 'insert', (newValues) => @emit('insert', newValues)
-    output.on 'remove', (newValues) => @emit('remove', oldValues)
+    output.on 'remove', (oldValues) => @emit('remove', oldValues)
     @lastStage.pass(output)
 
   buildUnbounded: ->        

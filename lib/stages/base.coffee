@@ -4,8 +4,13 @@ exports.BaseStage = class BaseStage extends events.EventEmitter
 
   pass: (nextStage) ->
     @nextStage = nextStage
-    @on('insert', (data) => @nextStage.push(data))
+    @on('insert', (data) => @nextStage.insert(data))
+    @on('remove', (data) => @nextStage.remove(data))
     nextStage
   
-  push: (data) ->
-    @nextStage.push(data)
+  insert: (data) ->
+    @emit('insert', data)
+  
+  remove: (data) ->
+    @emit('remove', data)
+    

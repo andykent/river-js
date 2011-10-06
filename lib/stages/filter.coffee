@@ -7,5 +7,5 @@ exports.Filter = class Filter extends BaseStage
   constructor: (@conditions) ->
     @compiledConditions = new ConditionCompiler(@conditions)
     
-  push: (data) ->
+  insert: (data) ->
     @emit('insert', data) if @compiledConditions.exec(data)

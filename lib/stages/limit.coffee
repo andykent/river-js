@@ -6,7 +6,7 @@ exports.Limit = class Limit extends BaseStage
     @limit = limit.value
     @passed = 0
   
-  push: (data) ->
+  insert: (data) ->
     return if @limit == @passed
     @passed++
     @emit('insert', data) 
