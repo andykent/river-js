@@ -57,4 +57,14 @@ describe "Bounded Queries", ->
     ctx.push('data', foo:1)
     ctx.push('data', foo:4)
     ensureUpdates()
+
+  it "Compiles aggregations", ->
+    ctx = river.createContext()
+    query = ctx.addQuery 'SELECT COUNT(foo) AS bar FROM data.win:length(2)'
+    query.on('insert', expectUpdates({bar:1},{bar:3},{bar:5}))
+    query.on('remove', expectUpdates({bar:1},{bar:3}))
+    ctx.push('data', foo:1)
+    ctx.push('data', foo:2)
+    ctx.push('data', foo:3)
+    ensureUpdates()
     

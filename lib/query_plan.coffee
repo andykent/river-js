@@ -1,5 +1,6 @@
 events = require("events")
 stages = require('./stages')
+nodes = require('sql-parser').nodes
 
 exports.QueryPlan = class QueryPlan extends events.EventEmitter
   constructor: (query) ->
@@ -29,11 +30,6 @@ exports.QueryPlan = class QueryPlan extends events.EventEmitter
       filter = new stages.Filter(@query.where.conditions)
       @lastStage = @lastStage.pass(filter)
     
-    # GROUP BY fields
-    if @query.group
-      group = new stages.Group(@query.group)
-      @lastStage = @lastStage.pass(group)
-    
     # SELECT fields
     projection = new stages.Projection(@query.fields)
     @lastStage = @lastStage.pass(projection)
@@ -49,15 +45,27 @@ exports.QueryPlan = class QueryPlan extends events.EventEmitter
       @lastStage = @lastStage.pass(limit)
   
   buildBounded: ->
-    # go ahead and stash this data as it's needed
-    store = new stages.Store(@query.source)
-    @lastStage = @lastStage.pass(store)
+    # tell the data to replay based on the window
+    repeater = new stages.Repeater(@query.source)
+    @lastStage = @lastStage.pass(repeater)
 
     # WHERE clause to pre filter
     if @query.where
       filter = new stages.Filter(@query.where.conditions)
       @lastStage = @lastStage.pass(filter)
     
-    # SELECT fields
+    if @hasAggregation()
+      # Do aggregation if needed
+      store = new stages.Aggregation(@query.fields)
+      @lastStage = @lastStage.pass(store)
+    else    
+      # SELECT fields
       projection = new stages.Projection(@query.fields)
       @lastStage = @lastStage.pass(projection)
+  
+  aggregatorFields: ->
+    (f for f in @query.fields when f.field? and f.field.constructor is nodes.FunctionValue and !f.field.udf)
+  
+  hasAggregation: ->
+    @aggregatorFields().length > 0
+    

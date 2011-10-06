@@ -8,17 +8,24 @@ exports.Projection = class Projection extends BaseStage
 
   constructor: (fields) ->
     @fields = fields
+    @mode = null
     @hasAggregation = false
     @aggDataChange = false
     @initFunctions()
   
   insert: (data) ->
+    @mode = 'insert'
     projectedData = @project(data)
     @emit('insert', projectedData) if projectedData
 
   remove: (data) ->
+    @mode = 'remove'
     projectedData = @project(data)
     @emit('remove', projectedData) if projectedData
+    
+  insertRemove: (i,r) ->
+    @remove(r)
+    @insert(i)
   
   project: (data) -> 
     @aggDataChange = false
@@ -50,7 +57,10 @@ exports.Projection = class Projection extends BaseStage
       if field.field.udf
         fn.apply(record, @buildFnArgs(field.field.arguments, record))
       else
-        val = fn.push(record)
+        if @mode = 'insert'
+          val = fn.insert(record)
+        else
+          val = fn.remove(record)
         @aggDataChange = true if val?
         val
     else

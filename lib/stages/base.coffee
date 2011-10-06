@@ -6,6 +6,7 @@ exports.BaseStage = class BaseStage extends events.EventEmitter
     @nextStage = nextStage
     @on('insert', (data) => @nextStage.insert(data))
     @on('remove', (data) => @nextStage.remove(data))
+    @on('insert-remove', (i,r) => @nextStage.insertRemove(i,r))
     nextStage
   
   insert: (data) ->
@@ -13,4 +14,7 @@ exports.BaseStage = class BaseStage extends events.EventEmitter
   
   remove: (data) ->
     @emit('remove', data)
+
+  insertRemove: (i,r) ->
+    @emit('insert-remove', i, r)
     
