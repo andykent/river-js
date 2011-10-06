@@ -9,3 +9,7 @@ exports.Filter = class Filter extends BaseStage
     
   insert: (data) ->
     @emit('insert', data) if @compiledConditions.exec(data)
+    
+  remove: (data) ->
+    @emit('remove', data) if @compiledConditions.exec(data)
+    

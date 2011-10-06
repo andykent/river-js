@@ -23,7 +23,7 @@ exports.QueryPlan = class QueryPlan extends events.EventEmitter
     output.on 'remove', (oldValues) => @emit('remove', oldValues)
     @lastStage.pass(output)
 
-  buildUnbounded: ->        
+  buildUnbounded: ->
     # WHERE clause
     if @query.where
       filter = new stages.Filter(@query.where.conditions)
@@ -49,12 +49,12 @@ exports.QueryPlan = class QueryPlan extends events.EventEmitter
       @lastStage = @lastStage.pass(limit)
   
   buildBounded: ->
+    # go ahead and stash this data as it's needed
+    store = new stages.Store(@query.source)
+    @lastStage = @lastStage.pass(store)
+
     # WHERE clause to pre filter
     if @query.where
       filter = new stages.Filter(@query.where.conditions)
       @lastStage = @lastStage.pass(filter)
-    
-    # go ahead and stash this data as it's needed
-    store = new stages.Store(@query.source)
-    @lastStage = @lastStage.pass(store)
     
