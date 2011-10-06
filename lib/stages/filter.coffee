@@ -8,4 +8,4 @@ exports.Filter = class Filter extends BaseStage
     @compiledConditions = new ConditionCompiler(@conditions)
     
   push: (data) ->
-    @nextStage.push(data) if @compiledConditions.exec(data)
+    @emit('insert', data) if @compiledConditions.exec(data)

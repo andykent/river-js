@@ -9,4 +9,4 @@ exports.Limit = class Limit extends BaseStage
   push: (data) ->
     return if @limit == @passed
     @passed++
-    @nextStage.push(data) 
+    @emit('insert', data) 

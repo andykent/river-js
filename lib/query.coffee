@@ -11,7 +11,8 @@ exports.Query = class Query extends events.EventEmitter
     @id = queryIdCounter++
     @compiledQuery = new QueryPlan(@parsedQuery)
   start: (streamManager) ->
-    @compiledQuery.on 'update', (newValues, oldValues) => @emit('update', newValues, oldValues)
+    @compiledQuery.on 'insert', (newValues) => @emit('insert', newValues)
+    @compiledQuery.on 'remove', (oldValues) => @emit('remove', oldValues)
     @compiledQuery.start(streamManager)
   toString: -> @parsedQuery.toString()
 

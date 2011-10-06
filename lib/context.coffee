@@ -6,9 +6,9 @@ exports.Context = class Context
     @queryIdCounter = 1
     @queries = []
     @streamManager = new StreamManager()
-  addQuery: (queryString, callback=(->)) ->
+  addQuery: (queryString, insertCallback=null) ->
     query = new Query(queryString)
-    query.on('update', callback)
+    query.on('insert', insertCallback) if insertCallback
     query.start(@streamManager)
     @queries.push(query)
     query

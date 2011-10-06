@@ -16,7 +16,8 @@ headers = []
 
 ctx = river.createContext()
 
-ctx.addQuery query, (newValues, oldValues) ->
+q = ctx.addQuery query
+q.on 'insert', (newValues) ->
   if newValues?
     for o in newValues
       row = []

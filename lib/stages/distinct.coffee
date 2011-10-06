@@ -9,4 +9,4 @@ exports.Distinct = class Distinct extends BaseStage
     key = JSON.stringify(data)
     return if @seen.indexOf(key) > -1
     @seen.push(key)
-    @nextStage.push(data)
+    @emit('insert', data)

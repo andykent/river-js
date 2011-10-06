@@ -19,8 +19,12 @@ ctx = river.createContext()
 
 console.log("*** Registering Query ***")
 
-q = ctx.addQuery query, (newValues, oldValues) ->
+q = ctx.addQuery(query)
+
+q.on 'insert', (newValues) ->
   console.log("[NEW] #{JSON.stringify(v)}") for v in newValues if newValues?
+  
+q.on 'remove', (oldValues) ->
   console.log("[OLD] #{JSON.stringify(v)}") for v in oldValues if oldValues?
 
 console.log(q.toString())

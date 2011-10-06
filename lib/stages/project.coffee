@@ -16,7 +16,7 @@ exports.Project = class Project extends BaseStage
     @aggDataChange = false
     projectedData = @extractFieldsFromRecord(data)
     if @hasAggregation is false or @aggDataChange is true
-      @nextStage.push(projectedData)
+      @emit('insert', projectedData)
     
   isStarQuery: -> 
     @fields.length is 1 and @fields[0].star

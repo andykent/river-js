@@ -17,7 +17,12 @@ exports.QueryPlan = class QueryPlan extends events.EventEmitter
       @buildBounded()
     else
       @buildUnbounded()
-    
+    # OUTPUT stage
+    output = new stages.Output()
+    output.on 'insert', (newValues) => @emit('insert', newValues)
+    output.on 'remove', (newValues) => @emit('remove', oldValues)
+    @lastStage.pass(output)
+
   buildUnbounded: ->        
     # WHERE clause
     if @query.where
@@ -42,12 +47,14 @@ exports.QueryPlan = class QueryPlan extends events.EventEmitter
     if @query.limit
       limit = new stages.Limit(@query.limit.value)
       @lastStage = @lastStage.pass(limit)
-    
-    # OUTPUT stage
-    output = new stages.Output()
-    output.on 'update', (newValues, oldValues) => @emit('update', newValues, oldValues)
-    @lastStage.pass(output)
   
   buildBounded: ->
+    # WHERE clause to pre filter
+    if @query.where
+      filter = new stages.Filter(@query.where.conditions)
+      @lastStage = @lastStage.pass(filter)
     
-
+    # go ahead and stash this data as it's needed
+    store = new stages.Store(@query.source)
+    @lastStage = @lastStage.pass(store)
+    

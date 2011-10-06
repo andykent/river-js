@@ -7,7 +7,7 @@ exports.Group = class Group extends BaseStage
   
   push: (data) ->
     data['__bucket__'] = @makeKey(data)
-    @nextStage.push(data)
+    @emit('insert', data)
   
   makeKey: (record) ->
     ret = {}
