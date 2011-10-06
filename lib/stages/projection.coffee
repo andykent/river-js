@@ -4,7 +4,7 @@ aggregates = require('./../aggregates')
 nodes = require('sql-parser').nodes
 
 
-exports.Project = class Project extends BaseStage
+exports.Projection = class Projection extends BaseStage
 
   constructor: (fields) ->
     @fields = fields
@@ -13,10 +13,20 @@ exports.Project = class Project extends BaseStage
     @initFunctions()
   
   insert: (data) ->
+    projectedData = @project(data)
+    @emit('insert', projectedData) if projectedData
+
+  remove: (data) ->
+    projectedData = @project(data)
+    @emit('remove', projectedData) if projectedData
+  
+  project: (data) -> 
     @aggDataChange = false
     projectedData = @extractFieldsFromRecord(data)
     if @hasAggregation is false or @aggDataChange is true
-      @emit('insert', projectedData)
+      projectedData
+    else
+      null
     
   isStarQuery: -> 
     @fields.length is 1 and @fields[0].star

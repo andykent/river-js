@@ -44,3 +44,17 @@ describe "Bounded Queries", ->
     ctx.push('data', foo:1)
     ctx.push('data', foo:4)
     ensureUpdates()
+
+  it "Compiles projections", ->
+    ctx = river.createContext()
+    query = ctx.addQuery 'SELECT foo AS bar FROM data.win:length(2) WHERE foo > 1'
+    query.on('insert', expectUpdates({bar:2},{bar:3},{bar:4}))
+    query.on('remove', expectUpdates({bar:2},{bar:3}))
+    ctx.push('data', foo:1)
+    ctx.push('data', foo:2)
+    ctx.push('data', foo:1)
+    ctx.push('data', foo:3)
+    ctx.push('data', foo:1)
+    ctx.push('data', foo:4)
+    ensureUpdates()
+    
