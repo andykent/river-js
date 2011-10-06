@@ -12,6 +12,5 @@ exports.Store = class Store extends BaseStage
     @db.push(data)
     if @db.length > @limitValue
       old = @db.shift()
-    old = if old then [old] else null
     @emit('insert', data)
-    @emit('remove', old)
+    @emit('remove', old) if old
