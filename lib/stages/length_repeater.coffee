@@ -1,6 +1,6 @@
 {BaseStage} = require('./base')
 
-exports.Repeater = class Store extends BaseStage
+exports.LengthRepeater = class LengthRepeater extends BaseStage
 
   constructor: (tableDef) ->
     @name = tableDef.name.value

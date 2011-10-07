@@ -5,5 +5,6 @@ exports.Output = require('./stages/output').Output
 exports.Limit = require('./stages/limit').Limit
 exports.Distinct = require('./stages/distinct').Distinct
 exports.Root = require('./stages/root').Root
-exports.Repeater = require('./stages/repeater').Repeater
+exports.LengthRepeater = require('./stages/length_repeater').LengthRepeater
+exports.TimeRepeater = require('./stages/time_repeater').TimeRepeater
 exports.Aggregation = require('./stages/aggregation').Aggregation

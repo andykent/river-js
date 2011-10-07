@@ -46,7 +46,10 @@ exports.QueryPlan = class QueryPlan extends events.EventEmitter
   
   buildBounded: ->
     # tell the data to replay based on the window
-    repeater = new stages.Repeater(@query.source)
+    if @query.source.winFn is 'length'
+      repeater = new stages.LengthRepeater(@query.source)
+    else
+      repeater = new stages.TimeRepeater(@query.source)
     @lastStage = @lastStage.pass(repeater)
 
     # WHERE clause to pre filter
