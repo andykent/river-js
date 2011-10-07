@@ -1,29 +1,62 @@
 {BaseStage} = require('./base')
+aggregates = require('./../aggregates')
+nodes = require('sql-parser').nodes
+
 
 exports.Aggregation = class Store extends BaseStage
 
   constructor: (fields) ->
     @fields = fields
-    @count = null    
+    @storedRecord = null
+    @buildAggregators()
 
-  insert: (data) ->
-    oldCount = @count
-    @count += data.foo
-    if oldCount isnt @count
-      @emit('remove', {bar: oldCount}) if oldCount?
-      @emit('insert', {bar: @count})
+  insert: (record) ->
+    @run('insert', record)
   
   remove: (data) ->
-    oldCount = @count
-    @count -= data.foo
-    if oldCount? and oldCount isnt @count
-      @emit('remove', {bar: oldCount}) if oldCount?
-      @emit('insert', {bar: @count})
+    @run('remove', record)
   
   insertRemove: (i, r) ->
-    oldCount = @count
-    @count += i.foo
-    @count -= r.foo
-    if oldCount? and oldCount isnt @count
-      @emit('remove', {bar: oldCount}) if oldCount?
-      @emit('insert', {bar: @count})
+    @run('insertRemove', i, r)
+    
+  run: (mode, record, record2) ->
+    oldRecord = @storedRecord
+    if mode is 'insertRemove'
+      @aggregate('remove', record2)
+      @storedRecord = @aggregate('insert', record)
+    else
+      @storedRecord = @aggregate(mode, record)
+    if oldRecord isnt @storedRecord
+      @emit('remove', oldRecord) if oldRecord?
+      @emit('insert', @storedRecord)
+  
+  aggregate: (mode, record) ->
+    result = {}
+    for field, agg of @fieldAggregators
+      result[field] = agg[mode](record)
+    result
+  
+  buildAggregators: ->
+    @fieldAggregators = {}
+    for field in @fields
+      @fieldAggregators[@fieldName(field)] = @buildAggregator(field)
+  
+  buildAggregator: (field) ->
+    if @fieldIsFunction(field.field)
+      klass = aggregates.get(field.field.name)
+      instance = new klass(field.field.arguments)
+      instance
+    else
+      {
+        insert: (record) -> record[field.field.value],
+        remove: (record) -> record[field.field.value]
+      }
+  
+  fieldName: (field) ->
+    if @fieldIsFunction(field.field)
+      field.name or field.toString()
+    else
+      field.name or field.field.value
+
+  fieldIsFunction: (field) -> 
+    field? and field.constructor is nodes.FunctionValue
