@@ -8,15 +8,13 @@ class Count
     @field = @args[0]
     
   insert: (record) ->
-    oldCount = @count
     val = support.valueForField(@field, record)
     @count += val
-    @count unless @count is oldCount
+    @count
   
   remove: (record) ->
-    oldCount = @count
     val = support.valueForField(@field, record)
     @count -= val
-    @count unless @count is oldCount
+    @count
   
 exports.fn = Count

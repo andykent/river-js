@@ -26,7 +26,7 @@ exports.Aggregation = class Store extends BaseStage
       @storedRecord = @aggregate('insert', record)
     else
       @storedRecord = @aggregate(mode, record)
-    if oldRecord isnt @storedRecord
+    if @recordsDiffer(@storedRecord, oldRecord)
       @emit('remove', oldRecord) if oldRecord?
       @emit('insert', @storedRecord)
   
@@ -60,3 +60,6 @@ exports.Aggregation = class Store extends BaseStage
 
   fieldIsFunction: (field) -> 
     field? and field.constructor is nodes.FunctionValue
+  
+  recordsDiffer: (a, b) ->
+    JSON.stringify(a) isnt JSON.stringify(b)
