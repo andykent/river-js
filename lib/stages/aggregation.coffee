@@ -1,5 +1,6 @@
 {BaseStage} = require('./base')
 aggregates = require('./../aggregates')
+functions = require('./../functions')
 nodes = require('sql-parser').nodes
 
 
@@ -56,9 +57,16 @@ exports.Aggregation = class Store extends BaseStage
   
   buildAggregator: (field) ->
     if @fieldIsFunction(field.field)
-      klass = aggregates.getWindowed(field.field.name)
-      instance = new klass(field.field.arguments)
-      instance
+      if field.field.udf
+        fn = functions.get(field.field.name)
+        {
+          insert: (record) => fn.apply(record, @buildFnArgs(field.field.arguments, record)),
+          remove: (record) => fn.apply(record, @buildFnArgs(field.field.arguments, record))
+        }        
+      else
+        klass = aggregates.getWindowed(field.field.name)
+        instance = new klass(field.field.arguments)
+        instance
     else
       {
         insert: (record) -> record[field.field.value],
@@ -84,3 +92,11 @@ exports.Aggregation = class Store extends BaseStage
     for field in @groupFields
       ret[field.value] = record[field.value]
     JSON.stringify(ret)
+
+  buildFnArgs: (args, record) ->
+    fnArgs = []
+    for arg in args
+      switch arg.constructor 
+        when nodes.NumberValue  then arg.value
+        when nodes.LiteralValue then record[arg.value]
+        else arg.value
