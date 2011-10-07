@@ -58,7 +58,7 @@ describe "Bounded Queries", ->
     ctx.push('data', foo:4)
     ensureUpdates()
 
-  it "Compiles aggregations", ->
+  it "Compiles count aggregations", ->
     ctx = river.createContext()
     query = ctx.addQuery 'SELECT COUNT(foo) AS bar FROM data.win:length(2)'
     query.on('insert', expectUpdates({bar:1},{bar:3},{bar:5}))
@@ -66,6 +66,16 @@ describe "Bounded Queries", ->
     ctx.push('data', foo:1)
     ctx.push('data', foo:2)
     ctx.push('data', foo:3)
+    ensureUpdates()
+
+  it "Compiles max aggregations", ->
+    ctx = river.createContext()
+    query = ctx.addQuery 'SELECT MAX(foo) AS bar FROM data.win:length(2)'
+    query.on('insert', expectUpdates({bar:3},{bar:2}))
+    query.on('remove', expectUpdates({bar:3}))
+    ctx.push('data', foo:3)
+    ctx.push('data', foo:2)
+    ctx.push('data', foo:1)
     ensureUpdates()
 
   it "doesn't emit aggregations when no change", ->

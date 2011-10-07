@@ -13,7 +13,7 @@ exports.Aggregation = class Store extends BaseStage
   insert: (record) ->
     @run('insert', record)
   
-  remove: (data) ->
+  remove: (record) ->
     @run('remove', record)
   
   insertRemove: (i, r) ->
@@ -43,7 +43,7 @@ exports.Aggregation = class Store extends BaseStage
   
   buildAggregator: (field) ->
     if @fieldIsFunction(field.field)
-      klass = aggregates.get(field.field.name)
+      klass = aggregates.getWindowed(field.field.name)
       instance = new klass(field.field.arguments)
       instance
     else

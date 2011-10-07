@@ -14,6 +14,7 @@ catch e
 
 url = process.argv[2]
 query = process.argv[3]
+mode = process.argv[4] || 'i'
 
 ctx = river.createContext()
 
@@ -21,11 +22,15 @@ console.log("*** Registering Query ***")
 
 q = ctx.addQuery(query)
 
-q.on 'insert', (newValues) ->
-  console.log("[NEW] #{JSON.stringify(v)}") for v in newValues if newValues?
-  
-q.on 'remove', (oldValues) ->
-  console.log("[OLD] #{JSON.stringify(v)}") for v in oldValues if oldValues?
+if mode is 'i'
+  q.on 'insert', (v) -> console.log(JSON.stringify(v))
+
+if mode is 'r'
+  q.on 'remove', (v) -> console.log(JSON.stringify(v))
+
+if mode is 'ir'
+  q.on 'insert', (v) -> console.log("+ | #{JSON.stringify(v)}")
+  q.on 'remove', (v) -> console.log("- | #{JSON.stringify(v)}")
 
 console.log(q.toString())
 

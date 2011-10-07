@@ -1,4 +1,4 @@
-support = require('./../support')
+support = require('./../../support')
 
 class Count
 
@@ -8,13 +8,17 @@ class Count
     @field = @args[0]
     
   insert: (record) ->
+    oldCount = @count
     val = support.valueForField(@field, record)
+    val = Number(val) unless typeof val is 'number'
     @count += val
-    @count
+    @count unless @count is oldCount
   
   remove: (record) ->
+    oldCount = @count
     val = support.valueForField(@field, record)
+    val = Number(val) unless typeof val is 'number'
     @count -= val
-    @count
+    @count unless @count is oldCount
   
 exports.fn = Count
