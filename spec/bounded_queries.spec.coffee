@@ -97,4 +97,15 @@ describe "Bounded Queries", ->
     ctx.push('data', foo:2, x:2)
     ctx.push('data', foo:3, x:3)
     ensureUpdates()
+
+  it "Compiles group by statements", ->
+    ctx = river.createContext()
+    query = ctx.addQuery 'SELECT foo, COUNT(1) AS foo_count FROM data.win:length(3) GROUP BY foo'
+    query.on('insert', expectUpdates({foo:'x',foo_count:1},{foo:'y',foo_count:1},{foo:'x',foo_count:2},{foo:'x',foo_count:1},{foo:'y',foo_count:2}))
+    query.on('remove', expectUpdates({foo:'x',foo_count:1},{foo:'x',foo_count:2},{foo:'y',foo_count:1}))
+    ctx.push('data', foo:'x')
+    ctx.push('data', foo:'y')
+    ctx.push('data', foo:'x')
+    ctx.push('data', foo:'y')
+    ensureUpdates()
     

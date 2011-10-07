@@ -56,7 +56,10 @@ exports.QueryPlan = class QueryPlan extends events.EventEmitter
     
     if @hasAggregation()
       # Do aggregation if needed
-      store = new stages.Aggregation(@query.fields)
+      if @query.group
+        store = new stages.Aggregation(@query.fields, @query.group.fields)
+      else
+        store = new stages.Aggregation(@query.fields)
       @lastStage = @lastStage.pass(store)
     else    
       # SELECT fields
