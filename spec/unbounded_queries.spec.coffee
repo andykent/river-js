@@ -154,6 +154,13 @@ describe "Unbounded Queries", ->
     ctx.push('data', foo:'yes')
     ensureUpdates()
   
+  it "Compiles Expressions in place of fields", ->
+    ctx = river.createContext()
+    q = ctx.addQuery "SELECT foo+1, foo FROM data"
+    q.on('insert', expectUpdate({foo:1, '(`foo` + 1)':2}))
+    ctx.push('data', foo:1)
+    ensureUpdates()
+  
   # it "Compiles 'select with group' queries", ->
   #   ctx = river.createContext()
   #   ctx.addQuery "SELECT foo, COUNT(1) FROM data GROUP BY foo", 

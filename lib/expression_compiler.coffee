@@ -3,7 +3,7 @@ functions = require('./functions')
 
 
 
-exports.ConditionCompiler = class ConditionCompiler
+exports.ExpressionCompiler = class ExpressionCompiler
   constructor: (@conditions) ->
     @compile(@conditions)
   

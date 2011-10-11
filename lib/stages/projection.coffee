@@ -2,6 +2,7 @@
 functions = require('./../functions')
 aggregates = require('./../aggregates')
 nodes = require('sql-parser').nodes
+{ExpressionCompiler} = require('./../expression_compiler')
 
 
 exports.Projection = class Projection extends BaseStage
@@ -11,6 +12,7 @@ exports.Projection = class Projection extends BaseStage
     @mode = null
     @hasAggregation = false
     @aggDataChange = false
+    @initExpressions()
     @initFunctions()
   
   insert: (data) ->
@@ -46,10 +48,10 @@ exports.Projection = class Projection extends BaseStage
     ret
   
   fieldName: (field) ->
-    if @fieldIsFunction(field.field)
-      field.name or field.toString()
+    if @fieldIsFunction(field.field) or @fieldIsExpression(field.field)
+      if field.name then field.name.value.toString() else field.toString()
     else
-      field.name or field.field.value
+      if field.name then field.name.value.toString() else field.field.value
   
   fieldValue: (field, record) ->
     if @fieldIsFunction(field.field)
@@ -63,11 +65,21 @@ exports.Projection = class Projection extends BaseStage
           val = fn.remove(record)
         @aggDataChange = true if val?
         val
+    else if @fieldIsExpression(field.field)
+      @expressions[@fieldName(field)].exec(record)
     else
       record[field.field.value]
   
   fieldIsFunction: (field) -> 
     field? and field.constructor is nodes.FunctionValue
+  
+  fieldIsExpression: (field) ->
+    field? and field.constructor is nodes.Op
+  
+  initExpressions: () ->
+    @expressions = {}
+    for field in @fields when @fieldIsExpression(field.field)
+      @expressions[@fieldName(field)] = new ExpressionCompiler(field.field) 
   
   initFunctions: () ->
     @functions = {}

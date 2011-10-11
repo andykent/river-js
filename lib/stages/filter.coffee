@@ -1,11 +1,11 @@
-{ConditionCompiler} = require('./../condition_compiler')
+{ExpressionCompiler} = require('./../expression_compiler')
 {BaseStage} = require('./base')
 
 
 exports.Filter = class Filter extends BaseStage
 
   constructor: (@conditions) ->
-    @compiledConditions = new ConditionCompiler(@conditions)
+    @compiledConditions = new ExpressionCompiler(@conditions)
     
   insert: (data) ->
     @emit('insert', data) if @compiledConditions.exec(data)

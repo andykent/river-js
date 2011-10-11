@@ -75,9 +75,9 @@ exports.Aggregation = class Store extends BaseStage
   
   fieldName: (field) ->
     if @fieldIsFunction(field.field)
-      field.name or field.toString()
+      if field.name then field.name.value.toString() else field.toString()
     else
-      field.name or field.field.value
+      if field.name then field.name.value.toString() else field.field.value
 
   fieldIsFunction: (field) -> 
     field? and field.constructor is nodes.FunctionValue
