@@ -108,8 +108,8 @@ describe "Unbounded Queries", ->
   it "Compiles 'select with min(field)' queries", ->
     ctx = river.createContext()
     q = ctx.addQuery "SELECT MIN(foo) AS foo_min FROM data"
-      # TODO: The expectation should actually be this, as it should include the old value too.
-      # expectUpdates([[{foo_min:3}], null], [[{foo_min:2}], [{foo_min:3}]])
+    # TODO: The expectation should actually be this, as it should remove the old value too.
+    # q.on('remove', expectUpdates([{foo_min:3}]))
     q.on('insert', expectUpdates({foo_min:3},{foo_min:2}))
     ctx.push('data', foo:3)
     ctx.push('data', foo:4)
