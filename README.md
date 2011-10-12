@@ -1,9 +1,13 @@
 River
 =====
 
-River is the successor to Creek it's designed for running efficient queries over unbounded streams of data.
+River is the successor to Creek it's designed for running efficient queries over unbounded streams of data. It's an experiment into running queries over unbounded time series data.
 
-It's still early days for River and the code is in flux but if your feeling brave then the current public interface looks something like this...
+If you are after a more heavy weight, production ready system please see Esper. If however you want something thats simple, easy to install and simple to use then you might want to give River a go.
+
+    npm install -g river
+
+It's still early days for River and the code is in flux but if your feeling brave then the current public API (from coffee script) looks something like this...
 
     river = require('river')
 
@@ -38,6 +42,7 @@ Currently Working Things
 * `SELECT * FROM data`
 * `SELECT a, b FROM data`
 * `SELECT a AS b FROM data`
+* `SELECT a.b.c AS d FROM data`
 * `SELECT * FROM data WHERE a = 1 AND b > 5`
 * `SELECT * FROM data LIMIT 5`
 * `SELECT DISTINCT a FROM data`
@@ -74,7 +79,7 @@ Wishlist
 
 * Views
 * Persistence
-* HA Server
+* HA Server Wrapper
 
 
 Command Line Tools
@@ -89,9 +94,8 @@ River ships with 2 simple command line tools `river-csv` and `river-zmq` these a
 Known Issues
 ------------
 
-* Nested functions don't work everywhere
-* Math doesn't really work anywhere
-* Groups don't work over windowed queries
+* Groups don't work over un-windowed queries
+* syntax checking isn't very good so doing silly things can cause silly errors
 
 
 Optimisations
