@@ -45,24 +45,10 @@ exports.Field = class Field
       @node.field.value
   
   _compile: (bucket) ->
-    if @isFunction()
-      if @node.field.udf
-        @_compileFunction()
-      else
-        @_compileAggregate()
-    else if @isExpression()
+    if @isAggregate()
+      @_compileAggregate()
+    else 
       @_compileExpression()
-    else
-      @_compileField()
-      
-  _compileFunction: ->
-    fn = functions.get(@node.field.name)
-    compiledArgs = @_compileFunctionArgs()
-    execArgs = (r) -> (arg.exec(r) for arg in compiledArgs) 
-    {
-      insert: (record) => fn.apply(record, execArgs(record))
-      remove: (record) => fn.apply(record, execArgs(record))
-    }
   
   _compileAggregate: ->
     if @isWindowed
@@ -78,13 +64,6 @@ exports.Field = class Field
       insert: (record) -> exp.exec(record)
       remove: (record) -> exp.exec(record)
     }
-  
-  _compileField: ->
-    f = @node.field.value
-    {
-      insert: (record) -> record[f]
-      remove: (record) -> record[f]
-    }    
   
   _compileFunctionArgs: () ->
     (new ExpressionCompiler(arg) for arg in @node.field.arguments)
