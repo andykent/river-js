@@ -9,14 +9,14 @@ class Count
     
   insert: (record) ->
     oldCount = @count
-    val = support.valueForField(@field, record)
+    val = @field.exec(record)
     val = Number(val) unless typeof val is 'number'
     @count += val
     @count unless @count is oldCount
   
   remove: (record) ->
     oldCount = @count
-    val = support.valueForField(@field, record)
+    val = @field.exec(record)
     val = Number(val) unless typeof val is 'number'
     @count -= val
     @count unless @count is oldCount

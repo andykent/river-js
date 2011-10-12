@@ -9,7 +9,7 @@ class Max
     
   insert: (record) ->
     oldMax = @max
-    val = support.valueForField(@field, record)
+    val = @field.exec(record)
     val = Number(val) unless typeof val is 'number'
     @max = val if @max is null or val > @max
     @max unless @max is oldMax

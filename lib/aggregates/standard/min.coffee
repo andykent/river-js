@@ -9,7 +9,7 @@ class Min
     
   insert: (record) ->
     oldMin = @min
-    val = support.valueForField(@field, record)
+    val = @field.exec(record)
     val = Number(val) unless typeof val is 'number'
     @min = val if @min is null or val < @min
     @min unless @min is oldMin

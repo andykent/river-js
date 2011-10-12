@@ -15,9 +15,15 @@ exports.ExpressionCompiler = class ExpressionCompiler
     compiledFunction = new Function('c', 'f', "return #{compiledString}")
     @compiledConditions = compiledFunction
   
-  compileNode: (condition) ->
-    left = @convertOrCompile(condition.left)
-    right = @convertOrCompile(condition.right)
+  compileNode: (node) ->
+    if node.constructor is nodes.Op
+      @compileOperator(node)
+    else 
+      @literalConversion(node)
+  
+  compileOperator: (condition) ->
+    left = @compileNode(condition.left)
+    right = @compileNode(condition.right)
     if condition.operation is 'LIKE'
       "#{@likeRegex(condition.right)}.test(#{left})"
     else
@@ -55,8 +61,3 @@ exports.ExpressionCompiler = class ExpressionCompiler
       else
         op
   
-  convertOrCompile: (node) ->
-    if node.constructor is nodes.Op
-      @compileNode(node)
-    else
-      @literalConversion(node)

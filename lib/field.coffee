@@ -57,9 +57,11 @@ exports.Field = class Field
       
   _compileFunction: ->
     fn = functions.get(@node.field.name)
+    compiledArgs = @_compileFunctionArgs()
+    execArgs = (r) -> (arg.exec(r) for arg in compiledArgs) 
     {
-      insert: (record) => fn.apply(record, @buildFnArgs(@node.field.arguments, record))
-      remove: (record) => fn.apply(record, @buildFnArgs(@node.field.arguments, record))
+      insert: (record) => fn.apply(record, execArgs(record))
+      remove: (record) => fn.apply(record, execArgs(record))
     }
   
   _compileAggregate: ->
@@ -67,7 +69,8 @@ exports.Field = class Field
       klass = aggregates.getWindowed(@node.field.name)
     else
       klass = aggregates.get(@node.field.name)
-    new klass(@node.field.arguments)
+    args = @_compileFunctionArgs()
+    new klass(args)
     
   _compileExpression: ->
     exp = new ExpressionCompiler(@node.field)
@@ -83,10 +86,5 @@ exports.Field = class Field
       remove: (record) -> record[f]
     }    
   
-  buildFnArgs: (args, record) ->
-    fnArgs = []
-    for arg in args
-      switch arg.constructor 
-        when nodes.NumberValue  then arg.value
-        when nodes.LiteralValue then record[arg.value]
-        else arg.value
+  _compileFunctionArgs: () ->
+    (new ExpressionCompiler(arg) for arg in @node.field.arguments)

@@ -160,6 +160,20 @@ describe "Unbounded Queries", ->
     q.on('insert', expectUpdate({foo:1, '(`foo` + 1)':2}))
     ctx.push('data', foo:1)
     ensureUpdates()
+
+  it "Compiles nested expressions in functions", ->
+    ctx = river.createContext()
+    q = ctx.addQuery "SELECT foo, FLOOR(LENGTH(foo)+1) AS x FROM data"
+    q.on('insert', expectUpdate({foo:'1', 'x':2}))
+    ctx.push('data', foo:'1')
+    ensureUpdates()
+  
+  it "Compiles nested expressions in aggeregates", ->
+    ctx = river.createContext()
+    q = ctx.addQuery "SELECT foo, MIN(LENGTH(foo)+1) AS x FROM data"
+    q.on('insert', expectUpdate({foo:'1', 'x':2}))
+    ctx.push('data', foo:'1')
+    ensureUpdates()
   
   # it "Compiles 'select with group' queries", ->
   #   ctx = river.createContext()

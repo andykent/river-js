@@ -8,13 +8,13 @@ class Count
     @field = @args[0]
     
   insert: (record) ->
-    val = support.valueForField(@field, record)
+    val = @field.exec(record)
     val = Number(val) unless typeof val is 'number'
     @count += val
     @count
   
   remove: (record) ->
-    val = support.valueForField(@field, record)
+    val = @field.exec(record)
     val = Number(val) unless typeof val is 'number'
     @count -= val
     @count

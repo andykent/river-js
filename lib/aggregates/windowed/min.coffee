@@ -9,13 +9,14 @@ class Min
     @field = @args[0]
     
   insert: (record) ->
-    val = support.valueForField(@field, record)
+    val = @field.exec(record)
     val = Number(val) unless typeof val is 'number'
+    @seen.push(val)
     @min = val if @min is null or val < @min
     @min
   
   remove: (record) ->
-    val = support.valueForField(@field, record)
+    val = @field.exec(record)
     val = Number(val) unless typeof val is 'number'
     idx = @seen.indexOf(val)
     @seen.splice(idx, 1) unless idx is -1
