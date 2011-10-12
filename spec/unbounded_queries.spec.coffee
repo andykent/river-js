@@ -185,6 +185,13 @@ describe "Unbounded Queries", ->
     ctx.push('data', foo:'1')
     ensureUpdates()
   
+  it "Compiles nested object properties using dot syntax", ->
+    ctx = river.createContext()
+    q = ctx.addQuery "SELECT LENGTH(x.y.z) AS foo FROM data"
+    q.on('insert', expectUpdate({foo:3}))
+    ctx.push('data', {x:{y:{z:'bar'}}})
+    ensureUpdates()
+  
   # it "Compiles 'select with group' queries", ->
   #   ctx = river.createContext()
   #   ctx.addQuery "SELECT foo, COUNT(1) FROM data GROUP BY foo", 

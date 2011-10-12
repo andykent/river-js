@@ -18,7 +18,7 @@ exports.ExpressionCompiler = class ExpressionCompiler
   compileNode: (node) ->
     if node.constructor is nodes.Op
       @compileOperator(node)
-    else 
+    else
       @literalConversion(node)
   
   compileOperator: (condition) ->
@@ -35,7 +35,8 @@ exports.ExpressionCompiler = class ExpressionCompiler
   literalConversion: (node) ->
     switch node.constructor 
       when nodes.LiteralValue
-        "c['#{node.value}']"
+        selector = ("['#{v}']" for v in node.values).join('')
+        "c#{selector}"
       when nodes.FunctionValue
         fn = "f.get('#{node.name}')"
         args = (@compileNode(arg) for arg in node.arguments)
