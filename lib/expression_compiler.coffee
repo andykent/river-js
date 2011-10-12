@@ -38,7 +38,7 @@ exports.ExpressionCompiler = class ExpressionCompiler
       when nodes.FunctionValue
         fn = "f.get('#{node.name}')"
         args = (@compileNode(arg) for arg in node.arguments)
-        "#{fn}(#{args})"
+        "#{fn}(#{args.join(', ')})"
       else
         val = node.value
         if typeof val is 'string'
