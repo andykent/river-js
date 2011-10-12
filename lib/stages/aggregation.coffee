@@ -2,14 +2,15 @@
 aggregates = require('./../aggregates')
 functions = require('./../functions')
 nodes = require('sql-parser').nodes
+{Field} = require('./../field')
 
 
-exports.Aggregation = class Store extends BaseStage
+exports.Aggregation = class Aggregation extends BaseStage
 
-  constructor: (@fields, @groupFields=null) ->
+  constructor: (fields, @groupFields=null) ->
+    @fields = Field.fieldListFromNodes(fields, true)
     @grouped = true if @groupFields?
     @storedRecords = {}
-    @groupAggregators = {}
   
   insert: (record) ->
     @run('insert', record)
@@ -40,63 +41,16 @@ exports.Aggregation = class Store extends BaseStage
   
   aggregate: (mode, key, record) ->
     result = {}
-    for field, agg of @getAggregators(key, record)
-      result[field] = agg[mode](record)
-    result
-    
-  getAggregators: (key, record) ->
-    @groupAggregators[key] ?= @buildAggregators()
-    # console.log(@groupAggregators)
-    @groupAggregators[key]
-  
-  buildAggregators: ->
-    a = {}
     for field in @fields
-      a[@fieldName(field)] = @buildAggregator(field)
-    a
-  
-  buildAggregator: (field) ->
-    if @fieldIsFunction(field.field)
-      if field.field.udf
-        fn = functions.get(field.field.name)
-        {
-          insert: (record) => fn.apply(record, @buildFnArgs(field.field.arguments, record)),
-          remove: (record) => fn.apply(record, @buildFnArgs(field.field.arguments, record))
-        }        
-      else
-        klass = aggregates.getWindowed(field.field.name)
-        instance = new klass(field.field.arguments)
-        instance
-    else
-      {
-        insert: (record) -> record[field.field.value],
-        remove: (record) -> record[field.field.value]
-      }
-  
-  fieldName: (field) ->
-    if @fieldIsFunction(field.field)
-      if field.name then field.name.value.toString() else field.toString()
-    else
-      if field.name then field.name.value.toString() else field.field.value
-
-  fieldIsFunction: (field) -> 
-    field? and field.constructor is nodes.FunctionValue
+      result[field.name] = field.perform(mode, record, key)
+    result
   
   recordsDiffer: (a, b) ->
     JSON.stringify(a) isnt JSON.stringify(b)
-  
-  
+    
   makeKey: (record) ->
     return '__DEFAULT__' unless @grouped
     ret = {}
     for field in @groupFields
       ret[field.value] = record[field.value]
     JSON.stringify(ret)
-
-  buildFnArgs: (args, record) ->
-    fnArgs = []
-    for arg in args
-      switch arg.constructor 
-        when nodes.NumberValue  then arg.value
-        when nodes.LiteralValue then record[arg.value]
-        else arg.value

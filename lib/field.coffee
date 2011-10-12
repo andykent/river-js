@@ -4,29 +4,23 @@ aggregates = require('./aggregates')
 {ExpressionCompiler} = require('./expression_compiler')
 
 exports.Field = class Field
-  constructor: (@node) ->
+  constructor: (@node, @isWindowed=false) ->
     @star = @node.star
     unless @star
       @name = @_name()
-      @isAggregate = false
-      @_compile()
+      @buckets = {}
   
-  insert: (record) ->
-    @perform('insert', record)
+  @fieldListFromNodes: (nodes, isWindowed=false) ->
+    (new Field(f, isWindowed) for f in nodes)
+
+  insert: (record, bucket='__DEFAULT__') ->
+    @perform('insert', record, bucket)
   
-  remove: (record) ->
-    @perform('remove', record)
+  remove: (record, bucket='__DEFAULT__') ->
+    @perform('remove', record, bucket)
       
-  perform: (mode, record) ->
-    if @isFunction()
-      if @isUDF()
-        @_function.apply(record, @buildFnArgs(@node.field.arguments, record))
-      else
-        @_function[mode](record) # insert / remove
-    else if @isExpression()
-      @_expression.exec(record)
-    else
-      record[@node.field.value]
+  perform: (mode, record, bucket='__DEFAULT__') ->
+    @bucket(bucket)[mode](record)
   
   isUDF: -> @node.field.udf
   
@@ -36,6 +30,13 @@ exports.Field = class Field
   isExpression: ->
     @node.field? and @node.field.constructor is nodes.Op
   
+  bucket: (key) ->
+    @buckets[key] ?= @_compile(key)
+    @buckets[key]
+  
+  isAggregate: ->
+    @isFunction() and not @node.field.udf
+  
   _name: ->
     return @node.name.value.toString() if @node.name
     if @isFunction() or @isExpression()
@@ -43,18 +44,45 @@ exports.Field = class Field
     else
       @node.field.value
   
-  _compile: ->
+  _compile: (bucket) ->
     if @isFunction()
       if @node.field.udf
-        @_function = functions.get(@node.field.name)
+        @_compileFunction()
       else
-        @isAggregate = true
-        klass = aggregates.get(@node.field.name)
-        instance = new klass(@node.field.arguments)
-        @_function = instance
-    if @isExpression()
-      @_expression = new ExpressionCompiler(@node.field)
-
+        @_compileAggregate()
+    else if @isExpression()
+      @_compileExpression()
+    else
+      @_compileField()
+      
+  _compileFunction: ->
+    fn = functions.get(@node.field.name)
+    {
+      insert: (record) => fn.apply(record, @buildFnArgs(@node.field.arguments, record))
+      remove: (record) => fn.apply(record, @buildFnArgs(@node.field.arguments, record))
+    }
+  
+  _compileAggregate: ->
+    if @isWindowed
+      klass = aggregates.getWindowed(@node.field.name)
+    else
+      klass = aggregates.get(@node.field.name)
+    new klass(@node.field.arguments)
+    
+  _compileExpression: ->
+    exp = new ExpressionCompiler(@node.field)
+    {
+      insert: (record) -> exp.exec(record)
+      remove: (record) -> exp.exec(record)
+    }
+  
+  _compileField: ->
+    f = @node.field.value
+    {
+      insert: (record) -> record[f]
+      remove: (record) -> record[f]
+    }    
+  
   buildFnArgs: (args, record) ->
     fnArgs = []
     for arg in args
@@ -62,19 +90,3 @@ exports.Field = class Field
         when nodes.NumberValue  then arg.value
         when nodes.LiteralValue then record[arg.value]
         else arg.value
-
-  # initExpressions: () ->
-  #   @expressions = {}
-  #   for field in @fields when @fieldIsExpression(field.field)
-  #     @expressions[@fieldName(field)] = new ExpressionCompiler(field.field) 
-  # 
-  # initFunctions: () ->
-  #   @functions = {}
-  #   for field in @fields when @fieldIsFunction(field.field)
-  #     if field.field.udf
-  #       @functions[@fieldName(field)] = functions.get(field.field.name)
-  #     else
-  #       @hasAggregation = true
-  #       klass = aggregates.get(field.field.name)
-  #       instance = new klass(field.field.arguments)
-  #       @functions[@fieldName(field)] = instance

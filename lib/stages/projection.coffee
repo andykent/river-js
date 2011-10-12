@@ -9,9 +9,9 @@ nodes = require('sql-parser').nodes
 exports.Projection = class Projection extends BaseStage
 
   constructor: (fields) ->
-    @fields = (new Field(f) for f in fields)
+    @fields = Field.fieldListFromNodes(fields)
     @mode = null
-    @hasAggregation = @fields.some((f) -> f.isAggregate)
+    @hasAggregation = @fields.some((f) -> f.isAggregate())
     @aggDataChange = false
   
   insert: (data) ->
@@ -43,11 +43,8 @@ exports.Projection = class Projection extends BaseStage
     return record if @isStarQuery()
     ret = {}
     for field in @fields
-      ret[@fieldName(field)] = @fieldValue(field, record)
+      ret[field.name] = @fieldValue(field, record)
     ret
-  
-  fieldName: (field) ->
-    field.name
   
   fieldValue: (field, record) ->
     val = field.perform(@mode, record)
