@@ -24,11 +24,12 @@ exports.ExpressionCompiler = class ExpressionCompiler
   compileOperator: (condition) ->
     left = @compileNode(condition.left)
     right = @compileNode(condition.right)
-    if condition.operation is 'LIKE'
-      "#{@likeRegex(condition.right)}.test(#{left})"
-    else
-      op = @conditionConversion(condition.operation)
-      ['(', left, op, right, ')'].join(' ')
+    switch condition.operation.toUpperCase()
+      when 'LIKE'
+        "#{@likeRegex(condition.right)}.test(#{left})"
+      else
+        op = @conditionConversion(condition.operation)
+        ['(', left, op, right, ')'].join(' ')
     
   
   literalConversion: (node) ->
@@ -43,6 +44,8 @@ exports.ExpressionCompiler = class ExpressionCompiler
         val = node.value
         if typeof val is 'string'
           "'#{val}'"
+        else if val is null
+          'null'
         else
           val
       
@@ -55,9 +58,11 @@ exports.ExpressionCompiler = class ExpressionCompiler
   
   conditionConversion: (op) ->
     switch op
-      when 'AND'  then '&&'
-      when 'OR'   then '||'
-      when '='    then '=='
+      when 'AND'    then '&&'
+      when 'OR'     then '||'
+      when '='      then '==='
+      when 'IS NOT' then '!=='
+      when 'IS'     then '==='
       else
         op
   

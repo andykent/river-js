@@ -65,6 +65,16 @@ describe "Unbounded Queries", ->
     ctx.push('data', foo:'xbarx')
     ctx.push('data', foo:'zbarz')
     ensureUpdates()
+
+  it "Compiles 'IS NOT' queries", ->
+    ctx = river.createContext()
+    q = ctx.addQuery "SELECT * FROM data WHERE foo IS NOT NULL"
+    q.on('insert', expectUpdates({foo:'1'},{foo:2}))
+    ctx.push('data', foo:'1')
+    ctx.push('data', foo:null)
+    ctx.push('data', foo:2)
+    ctx.push('data', foo:null)
+    ensureUpdates()
     
   it "Compiles 'select * WHERE AND' queries", ->
     ctx = river.createContext()
@@ -168,7 +178,7 @@ describe "Unbounded Queries", ->
     ctx.push('data', foo:'1')
     ensureUpdates()
   
-  it "Compiles nested expressions in aggeregates", ->
+  it "Compiles nested expressions in aggregates", ->
     ctx = river.createContext()
     q = ctx.addQuery "SELECT foo, MIN(LENGTH(foo)+1) AS x FROM data"
     q.on('insert', expectUpdate({foo:'1', 'x':2}))
