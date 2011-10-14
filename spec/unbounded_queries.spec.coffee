@@ -159,7 +159,7 @@ describe "Unbounded Queries", ->
     
   it "Compiles IF conditions", ->
     ctx = river.createContext()
-    q = ctx.addQuery "SELECT IF(foo, 1, 2) AS f FROM data"
+    q = ctx.addQuery "SELECT IF(LENGTH(foo) = 3, 1, 2) AS f FROM data"
     q.on('insert', expectUpdate({f:1}))
     ctx.push('data', foo:'yes')
     ensureUpdates()
