@@ -192,12 +192,13 @@ describe "Unbounded Queries", ->
     ctx.push('data', {x:{y:{z:'bar'}}})
     ensureUpdates()
   
-  # it "Compiles 'select with group' queries", ->
-  #   ctx = river.createContext()
-  #   ctx.addQuery "SELECT foo, COUNT(1) FROM data GROUP BY foo", 
-  #     expectUpdates([[{foo:'a', 'COUNT(1)':1}], null], [[{foo:'b', 'COUNT(1)':1}], null], [[{foo:'a', 'COUNT(1)':2}], null])
-  #   ctx.push('data', foo:'a', bar:1)
-  #   ctx.push('data', foo:'b', bar:1)
-  #   ctx.push('data', foo:'a', bar:1)
+  it "Compiles 'select with group' queries", ->
+    ctx = river.createContext()
+    q = ctx.addQuery "SELECT foo, COUNT(1) FROM data GROUP BY foo"
+    q.on('insert', expectUpdates({foo:'a', 'COUNT(1)':1},{foo:'b', 'COUNT(1)':1},{foo:'a', 'COUNT(1)':2}))
+    q.on('remove', expectUpdates({foo:'a', 'COUNT(1)':1}))
+    ctx.push('data', foo:'a', bar:1)
+    ctx.push('data', foo:'b', bar:1)
+    ctx.push('data', foo:'a', bar:1)
     
     
