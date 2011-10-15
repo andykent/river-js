@@ -46,23 +46,23 @@ Currently Working Things
 * `SELECT * FROM data WHERE a = 1 AND b > 5`
 * `SELECT * FROM data LIMIT 5`
 * `SELECT DISTINCT a FROM data`
-* `SELECT COUNT(a) FROM data`
+* `SELECT SUM(a) FROM data`
 * `SELECT MAX(a) FROM data.win:length(10)`
 * `SELECT a, b, MIN(c) FROM data.win:time(60) GROUP BY a, b`
 
 
 Supported Functions
 -------------------
-Aggregates: `COUNT`, `MIN`, `MAX`
+Aggregates: `SUM`, `MIN`, `MAX`
 Standard: `ABS`, `CEIL`, `CONCAT`, `FLOOR`, `IF`, `LENGTH`, `LOG`, `LOWER`, `ROUND`, `SUBSTR`, `UPPER`, `UNESCAPE`
 
 
 Work In Progress
 ----------------
 
-* `SELECT a, COUNT(b) FROM data.win:time(60) GROUP BY a HAVING COUNT(b) > 2`
-* `SELECT a, COUNT(b) FROM data GROUP BY a`
-* `SELECT a, COUNT(b) FROM data GROUP BY a HAVING COUNT(b) > 2`
+* `SELECT a, SUM(b) FROM data.win:time(60) GROUP BY a HAVING SUM(b) > 2`
+* `SELECT a, SUM(b) FROM data GROUP BY a`
+* `SELECT a, SUM(b) FROM data GROUP BY a HAVING SUM(b) > 2`
 
 
 Planned

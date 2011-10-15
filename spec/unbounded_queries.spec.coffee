@@ -99,17 +99,36 @@ describe "Unbounded Queries", ->
     ctx.push('data', foo:2, bar:2)
     ensureUpdates()
     
+  it "Compiles 'select with count(field)' queries", ->
+    ctx = river.createContext()
+    q = ctx.addQuery "SELECT COUNT(bar) FROM data"
+    q.on('insert', expectUpdates({'COUNT(`bar`)':1},{'COUNT(`bar`)':2}))
+    ctx.push('data', foo:'a', bar:1)
+    ctx.push('data', foo:'b', bar:null)
+    ctx.push('data', foo:'b', bar:'a')
+    ensureUpdates()
+
   it "Compiles 'select with count(1)' queries", ->
     ctx = river.createContext()
     q = ctx.addQuery "SELECT COUNT(1) FROM data"
-    q.on('insert', expectUpdates({'COUNT(1)':1},{'COUNT(1)':2}))
+    q.on('insert', expectUpdates({'COUNT(1)':1},{'COUNT(1)':2},{'COUNT(1)':3}))
+    ctx.push('data', foo:'a', bar:1)
+    ctx.push('data', foo:'b', bar:null)
+    ctx.push('data', foo:'b', bar:'a')
+    ensureUpdates()
+
+  it "Compiles 'select with sum(1)' queries", ->
+    ctx = river.createContext()
+    q = ctx.addQuery "SELECT SUM(1) FROM data"
+    q.on('insert', expectUpdates({'SUM(1)':1},{'SUM(1)':2}))
     ctx.push('data', foo:'a', bar:1)
     ctx.push('data', foo:'b', bar:1)
     ensureUpdates()
+
     
-  it "Compiles 'select with count(field)' queries", ->
+  it "Compiles 'select with sum(field)' queries", ->
     ctx = river.createContext()
-    q = ctx.addQuery "SELECT COUNT(foo) AS foo_count FROM data"
+    q = ctx.addQuery "SELECT SUM(foo) AS foo_count FROM data"
     q.on('insert', expectUpdates({foo_count:2},{foo_count:4}))
     ctx.push('data', foo:2, bar:1)
     ctx.push('data', foo:2, bar:1)
@@ -194,9 +213,9 @@ describe "Unbounded Queries", ->
   
   it "Compiles 'select with group' queries", ->
     ctx = river.createContext()
-    q = ctx.addQuery "SELECT foo, COUNT(1) FROM data GROUP BY foo"
-    q.on('insert', expectUpdates({foo:'a', 'COUNT(1)':1},{foo:'b', 'COUNT(1)':1},{foo:'a', 'COUNT(1)':2}))
-    q.on('remove', expectUpdates({foo:'a', 'COUNT(1)':1}))
+    q = ctx.addQuery "SELECT foo, SUM(1) FROM data GROUP BY foo"
+    q.on('insert', expectUpdates({foo:'a', 'SUM(1)':1},{foo:'b', 'SUM(1)':1},{foo:'a', 'SUM(1)':2}))
+    q.on('remove', expectUpdates({foo:'a', 'SUM(1)':1}))
     ctx.push('data', foo:'a', bar:1)
     ctx.push('data', foo:'b', bar:1)
     ctx.push('data', foo:'a', bar:1)

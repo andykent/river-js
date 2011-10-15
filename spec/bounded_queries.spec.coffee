@@ -60,7 +60,7 @@ describe "Bounded Queries", ->
 
   it "Compiles count aggregations", ->
     ctx = river.createContext()
-    query = ctx.addQuery 'SELECT COUNT(foo) AS bar FROM data.win:length(2)'
+    query = ctx.addQuery 'SELECT SUM(foo) AS bar FROM data.win:length(2)'
     query.on('insert', expectUpdates({bar:1},{bar:3},{bar:5}))
     query.on('remove', expectUpdates({bar:1},{bar:3}))
     ctx.push('data', foo:1)
@@ -80,7 +80,7 @@ describe "Bounded Queries", ->
 
   it "doesn't emit aggregations when no change", ->
     ctx = river.createContext()
-    query = ctx.addQuery 'SELECT COUNT(foo) AS bar FROM data.win:length(2)'
+    query = ctx.addQuery 'SELECT SUM(foo) AS bar FROM data.win:length(2)'
     query.on('insert', expectUpdates({bar:1},{bar:3}))
     query.on('remove', expectUpdates({bar:1}))
     ctx.push('data', foo:1)
@@ -90,7 +90,7 @@ describe "Bounded Queries", ->
 
   it "Compiles multiple aggregations ", ->
     ctx = river.createContext()
-    query = ctx.addQuery 'SELECT COUNT(foo) AS bar, COUNT(x) AS y FROM data.win:length(2)'
+    query = ctx.addQuery 'SELECT SUM(foo) AS bar, SUM(x) AS y FROM data.win:length(2)'
     query.on('insert', expectUpdates({bar:1,y:1},{bar:3,y:3},{bar:5,y:5}))
     query.on('remove', expectUpdates({bar:1,y:1},{bar:3,y:3}))
     ctx.push('data', foo:1, x:1)
@@ -100,7 +100,7 @@ describe "Bounded Queries", ->
 
   it "Compiles group by statements", ->
     ctx = river.createContext()
-    query = ctx.addQuery 'SELECT foo, COUNT(1) AS foo_count FROM data.win:length(3) GROUP BY foo'
+    query = ctx.addQuery 'SELECT foo, SUM(1) AS foo_count FROM data.win:length(3) GROUP BY foo'
     query.on('insert', expectUpdates({foo:'x',foo_count:1},{foo:'y',foo_count:1},{foo:'x',foo_count:2},{foo:'x',foo_count:1},{foo:'y',foo_count:2}))
     query.on('remove', expectUpdates({foo:'x',foo_count:1},{foo:'x',foo_count:2},{foo:'y',foo_count:1}))
     ctx.push('data', foo:'x')

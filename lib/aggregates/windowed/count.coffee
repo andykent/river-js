@@ -9,14 +9,14 @@ class Count
     
   insert: (record) ->
     val = @field.exec(record)
-    val = Number(val) unless typeof val is 'number'
-    @count += val
+    if val isnt null
+      @count++
     @count
   
   remove: (record) ->
     val = @field.exec(record)
-    val = Number(val) unless typeof val is 'number'
-    @count -= val
+    if val isnt null
+      @count--
     @count
   
 exports.fn = Count

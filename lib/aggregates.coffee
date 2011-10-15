@@ -1,4 +1,4 @@
-availableFunctions = ['COUNT', 'MIN', 'MAX']
+availableFunctions = ['COUNT', 'MIN', 'MAX', 'SUM']
 functions = {}
 windowedFunctions = {}
 for f in availableFunctions
