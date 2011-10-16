@@ -17,6 +17,7 @@ exports.QueryPlan = class QueryPlan extends events.EventEmitter
     @fields = Field.fieldListFromNodes(@query.fields, @isWindowed())
     @root = new stages.Root()
     @lastStage = @root
+    @addMinifier()
     @addRepeater() if @isWindowed()
     @addFilter() if @query.where
     if @hasAggregation() then @addAggregation() else @addProjection()
@@ -27,7 +28,11 @@ exports.QueryPlan = class QueryPlan extends events.EventEmitter
     output.on 'insert', (newValues) => @emit('insert', newValues)
     output.on 'remove', (oldValues) => @emit('remove', oldValues)
     @lastStage.pass(output)
-
+  
+  addMinifier: ->
+    minifier = new stages.Minifier(@query)
+    @lastStage = @lastStage.pass(minifier)
+  
   addRepeater: ->
     if @query.source.winFn is 'length'
       repeater = new stages.LengthRepeater(@query.source)

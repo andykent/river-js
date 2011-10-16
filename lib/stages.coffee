@@ -8,3 +8,4 @@ exports.Root = require('./stages/root').Root
 exports.LengthRepeater = require('./stages/length_repeater').LengthRepeater
 exports.TimeRepeater = require('./stages/time_repeater').TimeRepeater
 exports.Aggregation = require('./stages/aggregation').Aggregation
+exports.Minifier = require('./stages/minifier').Minifier

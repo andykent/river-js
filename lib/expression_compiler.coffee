@@ -5,8 +5,9 @@ functions = require('./functions')
 
 exports.ExpressionCompiler = class ExpressionCompiler
   constructor: (@conditions) ->
+    @usedProperties = []
     @compile(@conditions)
-  
+    
   exec: (context) ->
     @compiledConditions(context, functions)
   
@@ -35,6 +36,7 @@ exports.ExpressionCompiler = class ExpressionCompiler
   literalConversion: (node) ->
     switch node.constructor 
       when nodes.LiteralValue
+        @usedProperties.push(node.values)
         selector = ("['#{v}']" for v in node.values).join('')
         "c#{selector}"
       when nodes.FunctionValue

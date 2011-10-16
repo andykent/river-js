@@ -96,7 +96,6 @@ Known Issues
 Optimisations
 -------------
 * generating group keys using JSON.stringify is probably very sub-optimal
-* Storage could be optimised by pruning records to only include the fields required by the query on input
 * multiple queries in a context over the same stream windows could share events
 
 
