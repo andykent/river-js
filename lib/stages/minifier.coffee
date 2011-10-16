@@ -35,3 +35,8 @@ exports.Minifier = class Minifier extends BaseStage
     if query.where?
       c = new ExpressionCompiler(query.where.conditions)
       @fields.push(p) for p in c.usedProperties when @fields.indexOf(p) is -1
+    
+    if query.group?
+      c = new ExpressionCompiler(query.group.fields)
+      @fields.push(p) for p in c.usedProperties when @fields.indexOf(p) is -1
+      
