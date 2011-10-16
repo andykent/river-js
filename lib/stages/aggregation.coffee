@@ -2,13 +2,10 @@
 aggregates = require('./../aggregates')
 functions = require('./../functions')
 nodes = require('sql-parser').nodes
-{Field} = require('./../field')
-
 
 exports.Aggregation = class Aggregation extends BaseStage
 
-  constructor: (fields, @groupFields=null) ->
-    @fields = Field.fieldListFromNodes(fields, true)
+  constructor: (@fields, @groupFields=null) ->
     @grouped = true if @groupFields?
     @storedRecords = {}
   

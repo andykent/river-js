@@ -145,6 +145,14 @@ describe "Unbounded Queries", ->
     ctx.push('data', foo:2)
     ensureUpdates()
     
+  it "Compiles 'select with avg(field)' queries", ->
+    ctx = river.createContext()
+    q = ctx.addQuery "SELECT AVG(foo) AS foo_avg FROM data"
+    q.on('insert', expectUpdates({foo_avg:3},{foo_avg:2}))
+    ctx.push('data', foo:3)
+    ctx.push('data', foo:1)
+    ensureUpdates()
+    
   it "Compiles 'select DISTINCT' queries", ->
     ctx = river.createContext()
     q = ctx.addQuery "SELECT DISTINCT foo FROM data"

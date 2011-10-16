@@ -8,10 +8,9 @@ class Max
     @field = @args[0]
     
   insert: (record) ->
-    oldMax = @max
     val = @field.exec(record)
     val = Number(val) unless typeof val is 'number'
     @max = val if @max is null or val > @max
-    @max unless @max is oldMax
+    @max
   
 exports.fn = Max

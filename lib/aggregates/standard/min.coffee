@@ -8,10 +8,9 @@ class Min
     @field = @args[0]
     
   insert: (record) ->
-    oldMin = @min
     val = @field.exec(record)
     val = Number(val) unless typeof val is 'number'
     @min = val if @min is null or val < @min
-    @min unless @min is oldMin
+    @min
   
 exports.fn = Min

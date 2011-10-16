@@ -1,6 +1,8 @@
 events = require("events")
 stages = require('./stages')
 nodes = require('sql-parser').nodes
+{Field} = require('./field')
+
 
 exports.QueryPlan = class QueryPlan extends events.EventEmitter
   constructor: (query) ->
@@ -12,9 +14,10 @@ exports.QueryPlan = class QueryPlan extends events.EventEmitter
     listener.on 'data', (data) => @root.insert(data)
   
   build: ->
+    @fields = Field.fieldListFromNodes(@query.fields, @isWindowed())
     @root = new stages.Root()
     @lastStage = @root
-    @addRepeater() if @query.source.win
+    @addRepeater() if @isWindowed()
     @addFilter() if @query.where
     if @hasAggregation() then @addAggregation() else @addProjection()
     @addDistinct() if @query.distinct
@@ -38,13 +41,13 @@ exports.QueryPlan = class QueryPlan extends events.EventEmitter
     
   addAggregation: ->
     if @query.group
-      store = new stages.Aggregation(@query.fields, @query.group.fields)
+      store = new stages.Aggregation(@fields, @query.group.fields)
     else
-      store = new stages.Aggregation(@query.fields)
+      store = new stages.Aggregation(@fields)
     @lastStage = @lastStage.pass(store)
 
   addProjection: ->    
-    projection = new stages.Projection(@query.fields)
+    projection = new stages.Projection(@fields)
     @lastStage = @lastStage.pass(projection)
     
   addDistinct: ->
@@ -60,4 +63,5 @@ exports.QueryPlan = class QueryPlan extends events.EventEmitter
   
   hasAggregation: ->
     @aggregatorFields().length > 0
-    
+  
+  isWindowed: -> @query.source.win isnt null

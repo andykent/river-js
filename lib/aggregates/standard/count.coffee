@@ -8,18 +8,16 @@ class Count
     @field = @args[0]
     
   insert: (record) ->
-    oldCount = @count
     val = @field.exec(record)
     if val isnt null
       @count++
-    @count unless @count is oldCount
+    @count
   
   remove: (record) ->
-    oldCount = @count
     val = @field.exec(record)
     val = @field.exec(record)
     if val isnt null
       @count-- 
-    @count unless @count is oldCount
+    @count
   
 exports.fn = Count

@@ -1,22 +1,25 @@
 support = require('./../../support')
 
-class Sum
+class Avg
 
   constructor: (@args) ->
     @count = 0
-    throw new Error("SUM() should only be called with one argument") unless @args.length is 1
+    @sum = 0
+    throw new Error("AVG() should only be called with one argument") unless @args.length is 1
     @field = @args[0]
     
   insert: (record) ->
     val = @field.exec(record)
     val = Number(val) unless typeof val is 'number'
-    @count += val
-    @count
+    @count++
+    @sum += val
+    @sum / @count
   
   remove: (record) ->
     val = @field.exec(record)
     val = Number(val) unless typeof val is 'number'
-    @count -= val
-    @count
+    @count--
+    @sum -= val
+    @sum / @count
   
-exports.fn = Sum
+exports.fn = Avg
