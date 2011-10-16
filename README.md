@@ -1,13 +1,13 @@
 River
 =====
 
-River is the successor to Creek it's designed for running efficient queries over unbounded streams of data. It's an experiment into running queries over unbounded time series data.
+River is the successor to Creek (https://github.com/andykent/creek) it's designed for running efficient queries over unbounded streams of data. At this points it's an experimental playground and should be treated as such.
 
-If you are after a more heavy weight, production ready system please see Esper. If however you want something thats simple, easy to install and simple to use then you might want to give River a go.
+If you are after a heavy weight, production ready system please see the Esper project. If however you want something thats simple, easy to install and simple to use then you might want to give River a go.
 
     npm install -g river
 
-It's still early days for River and the code is in flux but if your feeling brave then the current public API (from coffee script) looks something like this...
+It's still early days for River and the code is in flux but if your feeling brave then the current public API (from coffeescript) looks something like this...
 
     river = require('river')
 
@@ -38,7 +38,6 @@ It's still early days for River and the code is in flux but if your feeling brav
 
 Currently Working Things
 ------------------------
-
 * `SELECT * FROM data`
 * `SELECT a, b FROM data`
 * `SELECT a AS b FROM data`
@@ -50,6 +49,8 @@ Currently Working Things
 * `SELECT a, SUM(b) FROM data GROUP BY a`
 * `SELECT MAX(a) FROM data.win:length(10)`
 * `SELECT a, b, MIN(c) FROM data.win:time(60) GROUP BY a, b`
+* `SELECT a, SUM(b) AS s FROM data.win:time(60) GROUP BY a HAVING s > 2`
+* `SELECT a, SUM(b) AS s FROM data GROUP BY a HAVING s > 2`
 
 
 Supported Functions
@@ -60,14 +61,12 @@ Standard: `ABS`, `CEIL`, `CONCAT`, `FLOOR`, `IF`, `LENGTH`, `LOG`, `LOWER`, `ROU
 
 Work In Progress
 ----------------
-
 * `SELECT a, SUM(b) FROM data.win:time(60) GROUP BY a HAVING SUM(b) > 2`
 * `SELECT a, SUM(b) FROM data GROUP BY a HAVING SUM(b) > 2`
 
 
 Planned
 -------
-
 * Time batching
 * Sub selects
 * Unions
@@ -76,7 +75,6 @@ Planned
 
 Wishlist
 --------
-
 * Views
 * Persistence
 * HA Server Wrapper
@@ -84,7 +82,6 @@ Wishlist
 
 Command Line Tools
 ------------------
-
 River ships with 2 simple command line tools `river-csv` and `river-zmq` these are useful for doing little on the fly data queries. They work like so...
 
 * `river-csv myfile.csv "SELECT * FROM file"` - expects a path to a CSV file with headers followed by a query, runs the query against the file and emits a new CSV file on stdout.
@@ -93,14 +90,11 @@ River ships with 2 simple command line tools `river-csv` and `river-zmq` these a
 
 Known Issues
 ------------
-
-* Groups don't work over un-windowed queries
 * syntax checking isn't very good so doing silly things can cause silly errors
-
+* Having clauses only work with aliased columns not in place aggregation functions
 
 Optimisations
 -------------
-
 * generating group keys using JSON.stringify is probably very sub-optimal
 * Storage could be optimised by pruning records to only include the fields required by the query on input
 * multiple queries in a context over the same stream windows could share events
