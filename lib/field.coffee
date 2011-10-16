@@ -13,14 +13,16 @@ exports.Field = class Field
   @fieldListFromNodes: (nodes, isWindowed=false) ->
     (new Field(f, isWindowed) for f in nodes)
 
-  insert: (record, bucket='__DEFAULT__') ->
+  insert: (record, bucket) ->
     @perform('insert', record, bucket)
   
-  remove: (record, bucket='__DEFAULT__') ->
+  remove: (record, bucket, dropBucket=false) ->
     @perform('remove', record, bucket)
       
-  perform: (mode, record, bucket='__DEFAULT__') ->
-    @bucket(bucket)[mode](record)
+  perform: (mode, record, bucket, dropBucket=false) ->
+    ret = @bucket(bucket)[mode](record)
+    @dropBucket(bucket) if dropBucket is true
+    ret
   
   isUDF: -> @node.field.udf
   
@@ -33,6 +35,9 @@ exports.Field = class Field
   bucket: (key) ->
     @buckets[key] ?= @_compile(key)
     @buckets[key]
+    
+  dropBucket: (key) ->
+    delete @buckets[key]
   
   isAggregate: ->
     @isFunction() and not @node.field.udf

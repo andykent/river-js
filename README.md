@@ -101,7 +101,6 @@ Known Issues
 Optimisations
 -------------
 
-* Groups current cause a memory leak as old group objects aren't removed after falling out of time windows
 * generating group keys using JSON.stringify is probably very sub-optimal
 * Storage could be optimised by pruning records to only include the fields required by the query on input
 * multiple queries in a context over the same stream windows could share events

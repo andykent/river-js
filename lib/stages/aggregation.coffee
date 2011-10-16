@@ -8,6 +8,7 @@ exports.Aggregation = class Aggregation extends BaseStage
   constructor: (@fields, @groupFields=null) ->
     @grouped = true if @groupFields?
     @storedRecords = {}
+    @refCounters = {}
   
   insert: (record) ->
     @run('insert', record)
@@ -37,9 +38,12 @@ exports.Aggregation = class Aggregation extends BaseStage
       @emit('insert', @storedRecords[key])
   
   aggregate: (mode, key, record) ->
+    removed = false
+    @incRefCount(key) if mode is 'insert'
+    removed = @decRefCount(key) if mode is 'remove'
     result = {}
     for field in @fields
-      result[field.name] = field.perform(mode, record, key)
+      result[field.name] = field.perform(mode, record, key, removed)
     result
   
   recordsDiffer: (a, b) ->
@@ -51,3 +55,19 @@ exports.Aggregation = class Aggregation extends BaseStage
     for field in @groupFields
       ret[field.value] = record[field.value]
     JSON.stringify(ret)
+  
+  incRefCount: (key) -> 
+    if @refCounters[key]?
+      @refCounters[key]++
+    else
+      @refCounters[key] = 1
+      
+  decRefCount: (key) ->
+    if key is 1
+      delete @refCounters[key]
+      delete @storedRecords[key]
+      true
+    else
+      @refCounters[key]--
+      false
+      
