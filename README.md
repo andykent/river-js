@@ -53,7 +53,7 @@ Currently Working Things
 
 Supported Functions
 -------------------
-Aggregates: `SUM`, `MIN`, `MAX`
+Aggregates: `AVG`, `COUNT`, `SUM`, `MIN`, `MAX`
 Standard: `ABS`, `CEIL`, `CONCAT`, `FLOOR`, `IF`, `LENGTH`, `LOG`, `LOWER`, `ROUND`, `SUBSTR`, `UPPER`, `UNESCAPE`
 
 
