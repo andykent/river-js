@@ -58,10 +58,6 @@ exports.QueryPlan = class QueryPlan extends events.EventEmitter
     limit = new stages.Limit(@query.limit.value)
     @lastStage = @lastStage.pass(limit)
     
-  aggregatorFields: ->
-    (f for f in @query.fields when f.field? and f.field.constructor is nodes.FunctionValue and !f.field.udf)
-  
-  hasAggregation: ->
-    @aggregatorFields().length > 0
-  
+  aggregatorFields: -> (f for f in @fields when f.isFunction() and !f.isUDF())
+  hasAggregation: -> @aggregatorFields().length > 0
   isWindowed: -> @query.source.win isnt null
