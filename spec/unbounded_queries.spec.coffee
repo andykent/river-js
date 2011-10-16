@@ -227,5 +227,13 @@ describe "Unbounded Queries", ->
     ctx.push('data', foo:'a', bar:1)
     ctx.push('data', foo:'b', bar:1)
     ctx.push('data', foo:'a', bar:1)
+  
+  it "Compiles 'select with group and having' queries", ->
+    ctx = river.createContext()
+    q = ctx.addQuery "SELECT foo, SUM(1) AS s FROM data GROUP BY foo HAVING s > 1"
+    q.on('insert', expectUpdates({foo:'a', s:2}))
+    ctx.push('data', foo:'a', bar:1)
+    ctx.push('data', foo:'b', bar:1)
+    ctx.push('data', foo:'a', bar:1)
     
     

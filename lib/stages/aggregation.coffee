@@ -2,11 +2,15 @@
 aggregates = require('./../aggregates')
 functions = require('./../functions')
 nodes = require('sql-parser').nodes
+{ExpressionCompiler} = require('./../expression_compiler')
 
 exports.Aggregation = class Aggregation extends BaseStage
 
-  constructor: (@fields, @groupFields=null) ->
+  constructor: (@fields, @groupFields=null, @havingClause=null) ->
     @grouped = true if @groupFields?
+    if @havingClause?
+      @hasHavingExpression = true
+      @havingExpression = new ExpressionCompiler(@havingClause.conditions)
     @storedRecords = {}
     @refCounters = {}
   
@@ -29,13 +33,16 @@ exports.Aggregation = class Aggregation extends BaseStage
       @storedRecords[key]  = @aggregate('insert', key, record)
       if key isnt key2
         if @recordsDiffer(@storedRecords[key2], oldRecord2)
-          @emit('remove', oldRecord2) if oldRecord2?
-          @emit('insert', @storedRecords[key2])
+          @maybeEmit('remove', oldRecord2) if oldRecord2?
+          @maybeEmit('insert', @storedRecords[key2])
     else
       @storedRecords[key] = @aggregate(mode, key, record)
     if @recordsDiffer(@storedRecords[key], oldRecord)
-      @emit('remove', oldRecord) if oldRecord?
-      @emit('insert', @storedRecords[key])
+      @maybeEmit('remove', oldRecord) if oldRecord?
+      @maybeEmit('insert', @storedRecords[key])
+  
+  maybeEmit: (mode, record) ->
+    @emit(mode, record) if not @havingClause or @havingExpression.exec(record)
   
   aggregate: (mode, key, record) ->
     removed = false

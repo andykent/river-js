@@ -47,6 +47,7 @@ Currently Working Things
 * `SELECT * FROM data LIMIT 5`
 * `SELECT DISTINCT a FROM data`
 * `SELECT SUM(a) FROM data`
+* `SELECT a, SUM(b) FROM data GROUP BY a`
 * `SELECT MAX(a) FROM data.win:length(10)`
 * `SELECT a, b, MIN(c) FROM data.win:time(60) GROUP BY a, b`
 
@@ -61,7 +62,6 @@ Work In Progress
 ----------------
 
 * `SELECT a, SUM(b) FROM data.win:time(60) GROUP BY a HAVING SUM(b) > 2`
-* `SELECT a, SUM(b) FROM data GROUP BY a`
 * `SELECT a, SUM(b) FROM data GROUP BY a HAVING SUM(b) > 2`
 
 
