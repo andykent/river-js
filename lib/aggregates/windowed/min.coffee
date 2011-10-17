@@ -1,5 +1,3 @@
-support = require('./../../support')
-
 class Min
 
   constructor: (@args) ->

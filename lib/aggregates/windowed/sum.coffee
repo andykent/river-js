@@ -1,5 +1,3 @@
-support = require('./../../support')
-
 class Sum
 
   constructor: (@args) ->

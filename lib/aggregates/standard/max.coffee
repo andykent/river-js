@@ -1,5 +1,3 @@
-support = require('./../../support')
-
 class Max
 
   constructor: (@args) ->

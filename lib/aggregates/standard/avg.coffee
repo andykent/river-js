@@ -1,5 +1,3 @@
-support = require('./../../support')
-
 class Avg
 
   constructor: (@args) ->
