@@ -1,3 +1,5 @@
+# Require and export all the available stages
+# See `QueryPlan` and individual stages for more info.
 exports.Listen = require('./stages/listen').Listen
 exports.Projection = require('./stages/projection').Projection
 exports.Filter = require('./stages/filter').Filter
