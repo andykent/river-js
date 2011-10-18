@@ -7,10 +7,11 @@ river = require('./../lib/river')
 try
   zmq = require('zmq')
 catch e
-  console.log("MISSING zmq LIB! Please `brew install zeromq` and `npm install -g zmq`")
+  process.stderr.write("MISSING zmq LIB! Please `brew install zeromq` and `npm install -g zmq`")
   process.exit(1)
 
-
+out = (str) -> 
+  process.stdout.write("#{str}\n")
 
 url = process.argv[2]
 query = process.argv[3]
@@ -18,23 +19,23 @@ mode = process.argv[4] || 'i'
 
 ctx = river.createContext()
 
-console.log("*** Registering Query ***")
+out("*** Registering Query ***")
 
 q = ctx.addQuery(query)
 
 if mode is 'i'
-  q.on 'insert', (v) -> console.log(JSON.stringify(v))
+  q.on 'insert', (v) -> out(JSON.stringify(v))
 
 if mode is 'r'
-  q.on 'remove', (v) -> console.log(JSON.stringify(v))
+  q.on 'remove', (v) -> out(JSON.stringify(v))
 
 if mode is 'ir'
-  q.on 'insert', (v) -> console.log("+ | #{JSON.stringify(v)}")
-  q.on 'remove', (v) -> console.log("- | #{JSON.stringify(v)}")
+  q.on 'insert', (v) -> out("+ | #{JSON.stringify(v)}")
+  q.on 'remove', (v) -> out("- | #{JSON.stringify(v)}")
 
-console.log(q.toString())
+out(q.toString())
 
-console.log("*** Connecting to: #{url} ***")
+out("*** Connecting to: #{url} ***")
 
 socket = zmq.createSocket('sub')
 socket.connect(url)
