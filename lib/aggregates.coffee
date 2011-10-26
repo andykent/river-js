@@ -14,12 +14,12 @@ for f in availableFunctions
 
 # fetch the standard version of this aggregate
 exports.get = (functionName) ->
-  f = functions[functionName]
+  f = functions[functionName.toUpperCase()]
   throw(new Error("UNKNOWN FUNCTION: #{functionName}")) unless f
   f
 
 # fetch the windowed version of this aggregate
 exports.getWindowed = (functionName) ->
-  f = windowedFunctions[functionName]
+  f = windowedFunctions[functionName.toUpperCase()]
   throw(new Error("UNKNOWN FUNCTION: #{functionName}")) unless f
   f

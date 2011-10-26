@@ -7,6 +7,6 @@ for f in availableFunctions
 
 # fetch a function by name
 exports.get = (functionName) ->
-  f = functions[functionName]
+  f = functions[functionName.toUpperCase()]
   throw(new Error("UNKNOWN FUNCTION: #{functionName}")) unless f
   f

@@ -169,6 +169,13 @@ describe "Unbounded Queries", ->
     ctx.push('data', foo:'bar')
     ensureUpdates()
     
+  it "Compiles Functions in lower case", ->
+    ctx = river.createContext()
+    q = ctx.addQuery "SELECT length(foo) as foo_l FROM data"
+    q.on('insert', expectUpdate({foo_l:3}))
+    ctx.push('data', foo:'bar')
+    ensureUpdates()
+    
   it "Compiles nested Functions", ->
     ctx = river.createContext()
     q = ctx.addQuery "SELECT MAX(NUMBER(foo)) as bar FROM data"
