@@ -82,7 +82,7 @@ exports.ExpressionCompiler = class ExpressionCompiler
   
   # Convert SQL operators into their JS equiv
   conditionConversion: (op) ->
-    switch op
+    switch op.toUpperCase()
       when 'AND'    then '&&'
       when 'OR'     then '||'
       when '='      then '==='

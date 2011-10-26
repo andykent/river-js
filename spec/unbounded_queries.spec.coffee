@@ -76,6 +76,16 @@ describe "Unbounded Queries", ->
     ctx.push('data', foo:null)
     ensureUpdates()
     
+  it "Compiles 'is not' queries in lowercase", ->
+    ctx = river.createContext()
+    q = ctx.addQuery "SELECT * FROM data WHERE foo is not null"
+    q.on('insert', expectUpdates({foo:'1'},{foo:2}))
+    ctx.push('data', foo:'1')
+    ctx.push('data', foo:null)
+    ctx.push('data', foo:2)
+    ctx.push('data', foo:null)
+    ensureUpdates()
+    
   it "Compiles 'select * WHERE AND' queries", ->
     ctx = river.createContext()
     q = ctx.addQuery "SELECT * FROM data WHERE foo = 1 AND bar = 2"
