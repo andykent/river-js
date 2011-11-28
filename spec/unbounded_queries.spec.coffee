@@ -253,4 +253,15 @@ describe "Unbounded Queries", ->
     ctx.push('data', foo:'b', bar:1)
     ctx.push('data', foo:'a', bar:1)
     
-    
+  describe "sub-selects", ->
+    it "Compiles unnamed sub-selects", ->
+      ctx = river.createContext()
+      q = ctx.addQuery "SELECT * FROM (SELECT * FROM data)"
+      q.on('insert', expectUpdate({foo:'bar'}))
+      ctx.push('data', foo:'bar')
+
+    it "Compiles named sub-selects with property selections", ->
+      ctx = river.createContext()
+      q = ctx.addQuery "SELECT d.foo FROM (SELECT * FROM data) d"
+      q.on('insert', expectUpdate({'`d.foo`':'bar'}))
+      ctx.push('data', foo:'bar')
