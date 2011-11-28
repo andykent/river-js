@@ -9,7 +9,6 @@
   "directories": { 
     "lib" : "./lib"
   },
-  "main": "lib/index",
   "bin": {
     "river-csv": "bin/river-csv",
     "river-zmq": "bin/river-zmq"
@@ -17,6 +16,10 @@
   "dependencies": {
     "coffee-script" : "1.0.1",
     "sql-parser"    : "0.1.9"
+  },
+  "devDependencies": {
+    "mocha"     : "0.0.8",
+    "should"    : "0.3.2"
   },
   "engines": [ 
     "node"
