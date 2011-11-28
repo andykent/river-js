@@ -9,7 +9,7 @@ SPACING = 2
 try
   zmq = require('zmq')
 catch e
-  process.stderr.write("MISSING zmq LIB! Please `brew install zeromq` and `npm install -g zmq`")
+  process.stderr.write("MISSING zmq LIB! Please `brew install zeromq` and `npm install -g zmq`\n")
   process.exit(1)
 
 out = (str) -> 

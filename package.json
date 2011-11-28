@@ -1,7 +1,7 @@
 {
   "name": "river",
   "description": "Creeks Big Brother",
-  "version": "0.2.8",
+  "version": "0.2.9",
   "author": {
     "name": "Andy Kent",
     "email": "andy@forward.co.uk"
@@ -9,7 +9,7 @@
   "directories": { 
     "lib" : "./lib"
   },
-  "main": "lib/index",
+  "main": "lib/river",
   "bin": {
     "river-csv": "bin/river-csv",
     "river-zmq": "bin/river-zmq"
