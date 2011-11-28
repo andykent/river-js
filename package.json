@@ -14,7 +14,7 @@
     "river-zmq": "bin/river-zmq"
   },
   "dependencies": {
-    "coffee-script" : "1.0.1",
+    "coffee-script" : "1.1.3",
     "sql-parser"    : "0.1.9"
   },
   "devDependencies": {
