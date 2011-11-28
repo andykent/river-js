@@ -1,9 +1,9 @@
 River
 =====
 
-River is the successor to Creek (https://github.com/andykent/creek) it's designed for running efficient queries over unbounded streams of data. At this points it's an experimental playground and should be treated as such.
+River is the successor to Creek (https://github.com/andykent/creek) it's designed for running efficient queries over unbounded streams of data. At this point it's an experimental playground and should be treated as such.
 
-If you are after a heavy weight, production ready system please see the Esper project. If however you want something thats simple, easy to install and simple to use then you might want to give River a go.
+If you are after a heavy weight, production ready system please see the Esper project. If however you want something thats hackable, easy to install and simple to use then you might want to give River a go.
 
     npm install -g river
 
@@ -38,19 +38,20 @@ It's still early days for River and the code is in flux but if your feeling brav
 
 Currently Working Things
 ------------------------
-* `SELECT * FROM data`
-* `SELECT a, b FROM data`
-* `SELECT a AS b FROM data`
-* `SELECT a.b.c AS d FROM data`
-* `SELECT * FROM data WHERE a = 1 AND b > 5`
-* `SELECT * FROM data LIMIT 5`
-* `SELECT DISTINCT a FROM data`
-* `SELECT SUM(a) FROM data`
-* `SELECT a, SUM(b) FROM data GROUP BY a`
-* `SELECT MAX(a) FROM data.win:length(10)`
-* `SELECT a, b, MIN(c) FROM data.win:time(60) GROUP BY a, b`
-* `SELECT a, SUM(b) AS s FROM data.win:time(60) GROUP BY a HAVING s > 2`
-* `SELECT a, SUM(b) AS s FROM data GROUP BY a HAVING s > 2`
+* `SELECT * FROM data` - selects
+* `SELECT a, b FROM data` - select fields
+* `SELECT a AS b FROM data` - select aliases
+* `SELECT a.b.c AS d FROM data` - select nested properties
+* `SELECT * FROM data WHERE a = 1 AND b > 5` - where conditions
+* `SELECT * FROM data LIMIT 5` - limits
+* `SELECT DISTINCT a FROM data` - row level distinct
+* `SELECT SUM(a) FROM data` - aggregate functions
+* `SELECT a, SUM(b) FROM data GROUP BY a` - grouped aggregates
+* `SELECT MAX(a) FROM data.win:length(10)` - length windows (last 10 events)
+* `SELECT a, b, MIN(c) FROM data.win:time(60) GROUP BY a, b` - time windows (last 60 seconds)
+* `SELECT a, SUM(b) AS s FROM data.win:time(60) GROUP BY a HAVING s > 2` - having conditions
+* `SELECT a, SUM(b) AS s FROM data GROUP BY a HAVING s > 2` - unbounded having
+* `SELECT d.foo FROM (SELECT foo FROM data) d` - aliased sub-selects
 
 
 Supported Functions
@@ -59,25 +60,18 @@ Aggregates: `AVG`, `COUNT`, `SUM`, `MIN`, `MAX`
 Standard: `ABS`, `CEIL`, `CONCAT`, `FLOOR`, `IF`, `LENGTH`, `LOG`, `LOWER`, `ROUND`, `SUBSTR`, `UPPER`, `UNESCAPE`
 
 
-Work In Progress
-----------------
-* `SELECT a, SUM(b) FROM data.win:time(60) GROUP BY a HAVING SUM(b) > 2`
-* `SELECT a, SUM(b) FROM data GROUP BY a HAVING SUM(b) > 2`
-
-
 Planned
 -------
-* Time batching
-* Sub selects
 * Unions
 * Joins
+* Time batching
 
 
 Wishlist
 --------
 * Views
-* Persistence
 * HA Server Wrapper
+* Persistence
 
 
 Command Line Tools
@@ -97,6 +91,6 @@ Optimisations
 -------------
 * generating group keys using JSON.stringify is probably very sub-optimal
 * multiple queries in a context over the same stream windows could share events
-
+* queries with sub-selects might be able to share common data
 
 
