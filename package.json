@@ -1,10 +1,11 @@
 {
   "name": "river",
-  "description": "Creeks Big Brother",
-  "version": "0.2.9",
+  "description": "SQL Query language over unbounded event streams",
+  "version": "0.3.0",
   "author": {
     "name": "Andy Kent",
-    "email": "andy@forward.co.uk"
+    "email": "andy.kent@me.com",
+    "url": "http://adkent.com"
   },
   "directories": { 
     "lib" : "./lib"
