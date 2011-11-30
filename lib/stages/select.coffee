@@ -38,10 +38,10 @@ exports.Select = class Select extends BaseStage
   # more Stages to the end of a plan.
   build: ->
     @fields = Field.fieldListFromNodes(@query.fields, @isWindowed())
-    @lastStage = @root = @buildRootStage()
-    @addListener() unless @reliesOnSubSelect(@source)
+    @lastStage = @addSource()
     @addMinifier()
     @addRepeater() if @isWindowed()
+    @addJoins()
     @addFilter() if @query.where
     if @hasAggregation() then @addAggregation() else @addProjection()
     @addDistinct() if @query.distinct
@@ -54,18 +54,9 @@ exports.Select = class Select extends BaseStage
   
   # The root Stage for a query will either be a Listen
   # or a SubSelect. Depending on the source.
-  buildRootStage: ->
-    if @reliesOnSubSelect(@source)
-      new stages.SubSelect(@source, @streamManager) 
-    else
-      new stages.Root()
-  
-  # Listen stages take the input stream and republish
-  # just the data that relevent as inserts into the query
-  addListener: ->
-    listener = new stages.Listen(@streamManager, @source.name.value)
-    listener.on 'data', (data) => @root.insert(data)
-  
+  addSource: ->
+    @root = new stages.Source(@source, @streamManager) 
+      
   # Minifiers take the insert stream and strip out fields
   # that aren't needed by the query.
   addMinifier: ->
@@ -81,6 +72,14 @@ exports.Select = class Select extends BaseStage
     else
       repeater = new stages.TimeRepeater(@source)
     @lastStage = @lastStage.pass(repeater)
+  
+  # Joins connect sources together they hold in memory indexes
+  # so that records between sources can be matched up.
+  # Most queries have an empty `joins` array so this is a no-op.
+  addJoins: ->
+    for join in @query.joins
+      join = new stages.Join(join, @streamManager, @root.alias)
+      @lastStage = @lastStage.pass(join)
   
   # Filters handle the WHERE part of a query.
   # They compile the conditions and then only emit

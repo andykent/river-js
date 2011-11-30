@@ -262,3 +262,14 @@ describe "Unbounded Queries", ->
       q = ctx.addQuery "SELECT d.foo FROM (SELECT * FROM data) d"
       q.on('insert', expectUpdate({'`d.foo`':'bar'}))
       ctx.push('data', foo:'bar')
+    
+  describe "JOIN syntax", ->
+    it "Compiles equality joins across 2 sources", ->
+      ctx = river.createContext()
+      q = ctx.addQuery "SELECT * FROM a JOIN b ON a.id = b.id"
+      q.on('insert', expectUpdate({ a:{id:2}, b:{id:2} }))
+      ctx.push('a', id:1)
+      ctx.push('a', id:2)
+      ctx.push('b', id:2)
+  
+  

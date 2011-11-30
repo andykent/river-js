@@ -1,7 +1,8 @@
 # Require and export all the available stages
 # See `QueryPlan` and individual stages for more info.
 exports.Select = require('./stages/select').Select
-exports.SubSelect = require('./stages/sub_select').SubSelect
+exports.Source = require('./stages/source').Source
+exports.Join = require('./stages/join').Join
 exports.Listen = require('./stages/listen').Listen
 exports.Projection = require('./stages/projection').Projection
 exports.Filter = require('./stages/filter').Filter
