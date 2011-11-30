@@ -62,16 +62,17 @@ Standard: `ABS`, `CEIL`, `CONCAT`, `FLOOR`, `IF`, `LENGTH`, `LOG`, `LOWER`, `ROU
 
 Planned
 -------
-* Unions
-* Joins
-* Time batching
-
+* Timestamps & Metadata - All events should carry around some metadata, insert time would be most useful.
+* Unions - Support for SQL UNION ALL so that queries can be merged.
+* Time batching - table.batch:time(secs) so that queries can be run over batches of time rather than sliding windows.
+* Patterns - Suport a syntax whihc allows describing patterns through time maybe like [a -> b -> c]
 
 Wishlist
 --------
-* Views
-* HA Server Wrapper
-* Persistence
+* Views - Allow Queries to be aliased as views and then used by other queries.
+* Partitions - Come up with a way to describe logical data partitions so multiple nodes/cores can handle different events.
+* HA Server Wrapper - Wrap River in a network server so that it can be used remotely.
+* Persistence - Maybe look at ways to store data out of process.
 
 
 Command Line Tools
@@ -84,13 +85,16 @@ River ships with 2 simple command line tools `river-csv` and `river-zmq` these a
 
 Known Issues
 ------------
-* syntax checking isn't very good so doing silly things can cause silly errors
+* syntax checking is pretty much non existent so doing silly things can cause silly errors
 * Having clauses only work with aliased columns not in place aggregation functions
+* JOINs are currently limited to LEFT INNER JOINs over unbounded sources
+
 
 Optimisations
 -------------
 * generating group keys using JSON.stringify is probably very sub-optimal
 * multiple queries in a context over the same stream windows could share events
 * queries with sub-selects might be able to share common data
-
+* JOINs have their own data structures. Could they share with repeaters to avoid duplicate objects?
+* JOINs use a loop in all cases but for equality joins (a.id = b.id) we could maintain an index.
 
