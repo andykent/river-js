@@ -77,8 +77,11 @@ exports.Select = class Select extends BaseStage
   # so that records between sources can be matched up.
   # Most queries have an empty `joins` array so this is a no-op.
   addJoins: ->
+    first = true
     for join in @query.joins
-      join = new stages.Join(join, @streamManager, @root.alias)
+      alias = if first then @root.alias else null
+      first = false
+      join = new stages.Join(join, @streamManager, alias)
       @lastStage = @lastStage.pass(join)
   
   # Filters handle the WHERE part of a query.

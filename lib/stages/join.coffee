@@ -10,7 +10,7 @@ stages = require('../stages')
 # LEFT sided INNER joins. More types coming soon.
 exports.Join = class Join extends BaseStage
   
-  constructor: (join, streamManager, @leftAlias) ->
+  constructor: (join, streamManager, @leftAlias=null) ->
     @leftTable = []
     @right = new stages.Source(join.right, streamManager)
     @right.on 'insert', (r) => @insertRight(r)
@@ -34,7 +34,11 @@ exports.Join = class Join extends BaseStage
     matches
   
   combine: (l,r) ->
-    ret = {}
-    ret[@leftAlias] = l
-    ret[@rightAlias] = r
-    ret
+    if @leftAlias
+      ret = {}
+      ret[@leftAlias] = l
+      ret[@rightAlias] = r
+      ret
+    else
+      l[@rightAlias] = r 
+      l

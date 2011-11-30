@@ -271,5 +271,15 @@ describe "Unbounded Queries", ->
       ctx.push('a', id:1)
       ctx.push('a', id:2)
       ctx.push('b', id:2)
-  
+      
+    it "Compiles equality joins across 3 sources", ->
+      ctx = river.createContext()
+      q = ctx.addQuery "SELECT * FROM a JOIN b ON a.id = b.id JOIN c ON b.id = c.id"
+      q.on('insert', expectUpdate({ a:{id:2}, b:{id:2}, c:{id:2} }))
+      ctx.push('a', id:1)
+      ctx.push('a', id:2)
+      ctx.push('b', id:2)
+      ctx.push('c', id:1)
+      ctx.push('c', id:2)
+    
   
