@@ -5,40 +5,72 @@ stages = require('../stages')
 
 # Join
 # ---------
-# Represents a logical joining of 2 data sources
-# Currently only supports insert streams and
-# LEFT sided INNER joins. More types coming soon.
+# Represents a logical joining of 2 data sources currently
+# only supports INNER joins. More types coming soon.
 exports.Join = class Join extends BaseStage
   
-  constructor: (join, streamManager, @leftAlias=null) ->
+  LEFT = 'leftTable'
+  RIGHT = 'rightTable'
+  
+  constructor: (join, streamManager, @left, @shouldAliasLeftSide, @leftSideIsWindowed) ->
     @leftTable = []
+    @rightTable = []
+    @validJoins = []
     @right = new stages.Source(join.right, streamManager)
     @right.on 'insert', (r) => @insertRight(r)
     @right.on 'remove', (r) => @removeRight(r)
     @right.on 'insertRemove', (i,r) => @insertRemoveRight(i,r)
-    @rightAlias = @right.alias
     # NOTE TYPO IN sql-parser: condtions Vs conditions!
     @compiledConditions = new ExpressionCompiler(join.condtions)
+  
   insert: (data) ->
     @leftTable.push(data)
+    @checkMatches(RIGHT, data)
+    
+  remove: (data) ->
+    @invalidate(LEFT, data)
+  
+  insertRemove: (i,r) ->
+    @insert(i)
+    @remove(r)
   
   insertRight: (data) ->
-    for match in @findMatches(data)
-      @emit('insert', match)
+    @rightTable.push(data)
+    @checkMatches(LEFT, data)
+    
+  removeRight: (data) ->
+    @invalidate(RIGHT, data)
   
-  findMatches: (data) ->
-    matches = []
-    for row in @leftTable
+  insertRemoveRight: (i,r) ->
+    @insertRight(i)
+    @removeRight(r)
+  
+  checkMatches: (side, data) ->
+    for row in this[side]
       combined = @combine(row, data)
-      matches.push(combined) if @compiledConditions.exec(combined)
-    matches
+      if @compiledConditions.exec(combined)
+        @emit('insert', combined) 
+        @validJoins.push(combined) if @joinsNeedTracking()
+    null
   
   combine: (l,r) ->
-    if @leftAlias
+    if @shouldAliasLeftSide
       ret = {}
-      ret[@leftAlias] = l
-      ret[@rightAlias] = r
+      ret[@left.alias] = l
+      ret[@right.alias] = r
       ret
     else
-      l[@rightAlias] = r 
+      l[@right.alias] = r 
       l
+  
+  invalidate: (side, data) ->
+    table = this[side]
+    table.splice(table.indexOf(data), 1)
+    a = if side is LEFT then @left.alias else @right.alias
+    for row, i in @validJoins when row[a] is data
+      @validJoins.splice(i,1)
+      @emit('remove', row)
+    null
+    
+  joinsNeedTracking: ->
+    @leftSideIsWindowed or @right.isWindowed()

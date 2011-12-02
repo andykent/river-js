@@ -34,3 +34,5 @@ exports.Source = class Source extends BaseStage
     obj = {}
     obj[@alias.value] = data
     obj
+  
+  isWindowed: -> @select and @select.isWindowed()

@@ -55,7 +55,7 @@ exports.Select = class Select extends BaseStage
   # The root Stage for a query will either be a Listen
   # or a SubSelect. Depending on the source.
   addSource: ->
-    @root = new stages.Source(@source, @streamManager) 
+    @root = new stages.Source(@source, @streamManager)
       
   # Minifiers take the insert stream and strip out fields
   # that aren't needed by the query.
@@ -79,9 +79,8 @@ exports.Select = class Select extends BaseStage
   addJoins: ->
     first = true
     for join in @query.joins
-      alias = if first then @root.alias else null
+      join = new stages.Join(join, @streamManager, @root, first, @isWindowed())
       first = false
-      join = new stages.Join(join, @streamManager, alias)
       @lastStage = @lastStage.pass(join)
   
   # Filters handle the WHERE part of a query.

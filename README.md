@@ -65,7 +65,7 @@ Planned
 * Timestamps & Metadata - All events should carry around some metadata, insert time would be most useful.
 * Unions - Support for SQL UNION ALL so that queries can be merged.
 * Time batching - table.batch:time(secs) so that queries can be run over batches of time rather than sliding windows.
-* Patterns - Suport a syntax whihc allows describing patterns through time maybe like [a -> b -> c]
+* Patterns - Support a syntax which allows describing patterns through time maybe like [a -> b -> c]
 
 Wishlist
 --------
