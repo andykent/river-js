@@ -3,10 +3,15 @@ river = require('../lib/river')
 expectedUpdates = 0
 seenUpdates = 0
 
+withoutMeta = (obj) ->
+  delete obj._ if obj._
+  obj[k] = withoutMeta(v) for k, v of obj when typeof v is 'object'
+  obj
+
 expectUpdate = (expectedValues) ->
   expectedUpdates += 1
   (newValues) ->
-    newValues.should.eql(expectedValues)
+    withoutMeta(newValues).should.eql(expectedValues)
     seenUpdates++
 
 expectUpdates = (expectedValues...) ->
@@ -14,7 +19,7 @@ expectUpdates = (expectedValues...) ->
   callCount = 0
   (newValues) ->
     expectedNewValues = expectedValues[callCount]
-    newValues.should.eql(expectedNewValues)
+    withoutMeta(newValues).should.eql(expectedNewValues)
     seenUpdates++
     callCount++
 

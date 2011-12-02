@@ -3,18 +3,24 @@ river = require('../lib/river')
 expectedUpdates = 0
 seenUpdates = 0
 
+withoutMeta = (obj) ->
+  delete obj._ if obj._
+  obj[k] = withoutMeta(v) for k, v of obj when typeof v is 'object'
+  obj
+    
 expectUpdate = (expectedValues) ->
   expectedUpdates += 1
   (newValues) ->
-    newValues.should.eql(expectedValues)
+    withoutMeta(newValues).should.eql(expectedValues)
     seenUpdates++
 
 expectUpdates = (expectedValues...) ->
   expectedUpdates += expectedValues.length
   callCount = 0
   (newValues) ->
+    delete newValues._
     expectedNewValues = expectedValues[callCount]
-    newValues.should.eql(expectedNewValues)
+    withoutMeta(newValues).should.eql(expectedNewValues)
     seenUpdates++
     callCount++
 
@@ -265,5 +271,24 @@ describe "Unbounded Queries", ->
       ctx.push('b', id:2)
       ctx.push('c', id:1)
       ctx.push('c', id:2)
-    
+   
+  describe "metadata", ->
+    it "adds a timestamp to queries", ->
+      ctx = river.createContext()
+      q = ctx.addQuery 'SELECT * FROM data'
+      q.on 'insert', (data) -> data._.ts.should.be.instanceof(Date)
+      ctx.push('data', abc)
+  
+    it "adds a UUID to queries", ->
+      ctx = river.createContext()
+      q = ctx.addQuery 'SELECT * FROM data'
+      q.on 'insert', (data) -> data._.uuid.should.be.a('string')
+      ctx.push('data', abc)
+  
+    it "adds a source to queries", ->
+      ctx = river.createContext()
+      q = ctx.addQuery 'SELECT * FROM data'
+      q.on 'insert', (data) -> data._.src.should.eql('data')
+      ctx.push('data', abc)
+  
   

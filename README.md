@@ -61,12 +61,19 @@ Aggregates: `AVG`, `COUNT`, `SUM`, `MIN`, `MAX`
 Standard: `ABS`, `CEIL`, `CONCAT`, `FLOOR`, `IF`, `LENGTH`, `LOG`, `LOWER`, `ROUND`, `SUBSTR`, `UPPER`, `UNESCAPE`
 
 
+Metadata
+--------
+All objects inserted get decorated with some metadata. This gets stored in a key called '_' and currently looks something like the following.
+
+    { ts: new Date(), src: 'mystream', uuid: '8188540d-418c-49f2-a231-d4dc86490f18' }
+
+
 Planned
 -------
-* Timestamps & Metadata - All events should carry around some metadata, insert time would be most useful.
 * Unions - Support for SQL UNION ALL so that queries can be merged.
 * Time batching - table.batch:time(secs) so that queries can be run over batches of time rather than sliding windows.
 * Patterns - Support a syntax which allows describing patterns through time maybe like [a -> b -> c]
+
 
 Wishlist
 --------
@@ -86,9 +93,9 @@ River ships with 2 simple command line tools `river-csv` and `river-zmq` these a
 
 Known Issues
 ------------
-* syntax checking is pretty much non existent so doing silly things can cause silly errors
-* Having clauses only work with aliased columns not in place aggregation functions
-* JOINs are currently limited to INNER only.
+* syntax checking is pretty much non existent so doing silly things can cause silly errors.
+* Having clauses only work with aliased columns not in place aggregation functions.
+* There is currently no support for OUTER joins.
 
 
 Optimisations
@@ -98,4 +105,5 @@ Optimisations
 * queries with sub-selects might be able to share common data
 * JOINs have their own data structures. Could they share with repeaters to avoid duplicate objects?
 * JOINs use a loop in all cases but for equality joins (a.id = b.id) we could maintain an index.
+* JOINs are probably sub optimal in almost every way.
 
