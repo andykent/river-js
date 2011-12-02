@@ -52,6 +52,7 @@ Currently Working Things
 * `SELECT a, SUM(b) AS s FROM data.win:time(60) GROUP BY a HAVING s > 2` - having conditions
 * `SELECT a, SUM(b) AS s FROM data GROUP BY a HAVING s > 2` - unbounded having
 * `SELECT d.foo FROM (SELECT foo FROM data) d` - aliased sub-selects
+* `SELECT * FROM a JOIN b ON a.id = b.id` - inner joins
 
 
 Supported Functions
@@ -87,7 +88,7 @@ Known Issues
 ------------
 * syntax checking is pretty much non existent so doing silly things can cause silly errors
 * Having clauses only work with aliased columns not in place aggregation functions
-* JOINs are currently limited to LEFT INNER JOINs over unbounded sources
+* JOINs are currently limited to INNER only.
 
 
 Optimisations
