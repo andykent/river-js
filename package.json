@@ -1,7 +1,7 @@
 {
   "name": "river",
   "description": "SQL Query language over unbounded event streams",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "author": {
     "name": "Andy Kent",
     "email": "andy.kent@me.com",
