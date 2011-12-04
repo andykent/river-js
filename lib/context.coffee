@@ -9,7 +9,7 @@ exports.Context = class Context
   
   constructor: ->
     @queryIdCounter = 1
-    @queries = []
+    @queries = {}
     @streamManager = new StreamManager()
   
   # A convenience function for creating a new `Query` and
@@ -18,10 +18,31 @@ exports.Context = class Context
   # bound to the insert stream of the newly created `Query`.
   addQuery: (queryString, insertCallback=null) ->
     query = new Query(queryString)
+    if existingQuery = @get(query.id)
+      query.destroy
+      return existingQuery
     query.on('insert', insertCallback) if insertCallback
     query.start(@streamManager)
-    @queries.push(query)
+    @queries[query.id] = query
     query
+  
+  # Given an queryId, we shut it down and then
+  # remove it from the pool.
+  removeQuery: (id) ->
+    query = @get(id)
+    return false unless query
+    id = query.id
+    query.destroy()
+    delete @queries[id]
+    true
+  
+  # Given either a query or a queryId, return either the query or null.
+  get: (queryOrId) ->
+    id = if queryOrId and queryOrId.constructor is Query
+      queryOrId.id 
+    else 
+      queryOrId
+    @queries[id] or null
   
   # A convenience function for pushing new data into a stream
   # within this context. This is the prefered way to insert data unless

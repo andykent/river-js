@@ -21,5 +21,7 @@ exports.QueryPlan = class QueryPlan extends events.EventEmitter
     @root = new stages.Select(@query, streamManager)
     @root.on 'insert', (newValues) => @emit('insert', newValues)
     @root.on 'remove', (oldValues) => @emit('remove', oldValues)  
-    
   
+  # need to shut the query listners down
+  stop: -> 
+    @root.stop()

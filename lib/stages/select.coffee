@@ -116,6 +116,9 @@ exports.Select = class Select extends BaseStage
     limit = new stages.Limit(@query.limit.value)
     @lastStage = @lastStage.pass(limit)
   
+  stop: ->
+    @root.stop()
+  
   # Lists the fields that are aggregators.
   aggregatorFields: -> (f for f in @fields when f.isFunction() and !f.isUDF())
   

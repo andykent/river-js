@@ -32,7 +32,6 @@ It's still early days for River and the code is in flux but if your feeling brav
     ctx.push('my_stream', foo:3, bar:4)
 
     # running queries can be removed using the ID provided by previous calls to addQuery
-    # COMING SOON!
     ctx.removeQuery(query.id)
 
 

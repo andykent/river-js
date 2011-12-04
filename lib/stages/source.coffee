@@ -17,9 +17,13 @@ exports.Source = class Source extends BaseStage
       @select.on 'remove', (oldValues) => @emit('remove', @alised(oldValues))
     else
       @alias = subSelect.name.value
-      listener = new stages.Listen(streamManager, @alias)
-      listener.on 'data', (data) => @emit('insert', data)
-      
+      @listener = new stages.Listen(streamManager, @alias)
+      @listener.on 'data', (data) => @emit('insert', data)
+  
+  stop: ->
+    return @select.destroy() if @select
+    @listener.stop()
+    
   insert: (data) ->
     @select.insert(data)
 

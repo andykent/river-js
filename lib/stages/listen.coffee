@@ -3,8 +3,9 @@ events = require("events")
 uuid = require('node-uuid')
 
 exports.Listen = class Listen extends events.EventEmitter
-  constructor: (streamManager, @sourceName) ->
-    streamManager.fetch(@sourceName).on('data', (data) => @emit('data', @withMetadata(data)))
+  constructor: (@streamManager, @sourceName) ->
+    @listenFn = ((data) => @emit('data', @withMetadata(data)))
+    @streamManager.fetch(@sourceName).on('data', @listenFn)
   
   withMetadata: (data) ->
     data._ = 
@@ -12,3 +13,6 @@ exports.Listen = class Listen extends events.EventEmitter
       src:  @sourceName
       ts:   new Date()    
     data
+    
+  stop: ->
+    @streamManager.fetch(@sourceName).removeListener('data', @listenFn)
