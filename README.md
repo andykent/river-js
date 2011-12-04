@@ -1,7 +1,9 @@
 River
 =====
 
-River is the successor to Creek (https://github.com/andykent/creek) it's designed for running efficient queries over unbounded streams of data. At this point it's an experimental playground and should be treated as such.
+River is designed for running efficient queries over unbounded streams of data. At this point it's an experimental playground and should be treated as such.
+
+In many ways you can conceptually think of River as a reverse database. Rather than storing data and then issuing queries over it, in River you create queries and then push data through them. Queries are written in a familiar SQL-like language which supports transforming, filtering, aggregating and merging data sources.
 
 If you are after a heavy weight, production ready system please see the Esper project. If however you want something thats hackable, easy to install and simple to use then you might want to give River a go.
 
@@ -95,6 +97,7 @@ Known Issues
 * syntax checking is pretty much non existent so doing silly things can cause silly errors.
 * Having clauses only work with aliased columns not in place aggregation functions.
 * There is currently no support for OUTER joins.
+* Some queries, specifically unwindowed JOIN's, can cause memory leaks.
 
 
 Optimisations
