@@ -5,6 +5,8 @@ River is designed for running efficient queries over unbounded streams of data. 
 
 In many ways you can conceptually think of River as a reverse database. Rather than storing data and then issuing queries over it, in River you create queries and then push data through them. Queries are written in a familiar SQL-like language which supports transforming, filtering, aggregating and merging data sources.
 
+River is written in 100% coffee-script and currently targets the node.js runtime. There is no technical reason why it wouldn't be possible for the code to run purely in a web browser.
+
 If you are after a heavy weight, production ready system please see the Esper project. If however you want something thats hackable, easy to install and simple to use then you might want to give River a go.
 
     npm install -g river
