@@ -1,4 +1,4 @@
-iterations = 1000000 * 10
+iterations = 1000000
 
 river = require('../lib/river')
 

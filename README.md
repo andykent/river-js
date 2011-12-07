@@ -61,6 +61,7 @@ Currently Working Things
 Supported Functions
 -------------------
 Aggregates: `AVG`, `COUNT`, `SUM`, `MIN`, `MAX`
+
 Standard: `ABS`, `CEIL`, `CONCAT`, `FLOOR`, `IF`, `LENGTH`, `LOG`, `LOWER`, `ROUND`, `SUBSTR`, `UPPER`, `UNESCAPE`
 
 
@@ -75,8 +76,10 @@ Planned
 -------
 * Unions - Support for SQL UNION ALL so that queries can be merged.
 * Time batching - table.batch:time(secs) so that queries can be run over batches of time rather than sliding windows.
-* Patterns - Support a syntax which allows describing patterns through time maybe like [a -> b -> c]
-
+* Patterns - Support a syntax which allows describing patterns through time maybe like [a -> b -> c].
+* Errors - Query syntax errors are caught by the Grammer but logical errors aren't currently handled.
+* UDFs - Allow user defined functions to be mixed into a context.
+* Time functions - unix_timestamp(date/str/int), date(str/int), strftime(date/str/int, fmt)
 
 Wishlist
 --------
