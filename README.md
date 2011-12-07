@@ -79,7 +79,7 @@ Planned
 * Patterns - Support a syntax which allows describing patterns through time maybe like [a -> b -> c].
 * Errors - Query syntax errors are caught by the Grammer but logical errors aren't currently handled.
 * UDFs - Allow user defined functions to be mixed into a context.
-* Time functions - unix_timestamp(date/str/int), date(str/int), strftime(date/str/int, fmt)
+* Time functions - unix_timestamp(d), date(d), strftime(d, fmt), year(d), month(d), day(d), hour(d), minute(d), second(d) - where d is date/string/number
 
 Wishlist
 --------
