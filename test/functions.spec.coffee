@@ -1,3 +1,4 @@
+require('date-utils')
 river = require('../lib/river')
 FunctionCollection = require('../lib/functions')
 f = new FunctionCollection()
@@ -56,6 +57,16 @@ describe "SQL Functions", ->
       f.get('ROUND')(1.2).should.eql(1)
     it "rounds a string", ->
       f.get('ROUND')('1.2').should.eql(1)
+
+  describe "YEAR()", ->
+    it "returns the year for a given date", ->
+      date = new Date(Date.parse('2011-12-08'))
+      f.get('YEAR')(date).should.eql('2011')
+    it "returns the year for a given string", ->
+      f.get('YEAR')('2011-12-08').should.eql('2011')
+    it "returns the year for a given microseconds since epoch", ->
+      f.get('YEAR')(1323302400000).should.eql('2011')
+
 
 describe "User Defined Functions", ->
   it "allows adding a user defined function to a context", ->

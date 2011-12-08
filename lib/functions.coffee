@@ -1,6 +1,6 @@
 # Require and export all the available functions
 # See individual functions for more info.
-availableFunctions = 'ABS CEIL CONCAT FLOOR IF LENGTH LOG LOWER NUMBER ROUND STRING SUBSTR UPPER UNESCAPE'.split(' ')
+availableFunctions = 'ABS CEIL CONCAT FLOOR IF LENGTH LOG LOWER NUMBER YEAR ROUND STRING SUBSTR UPPER UNESCAPE'.split(' ')
 functions = {}
 for f in availableFunctions
   functions[f] = require("./functions/#{f.toLowerCase()}").fn
