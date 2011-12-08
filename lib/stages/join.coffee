@@ -20,7 +20,7 @@ exports.Join = class Join extends BaseStage
     @right.on 'insert', (r) => @insertRight(r)
     @right.on 'remove', (r) => @removeRight(r)
     @right.on 'insertRemove', (i,r) => @insertRemoveRight(i,r)
-    @compiledConditions = new ExpressionCompiler(join.conditions)
+    @compiledConditions = new ExpressionCompiler(join.conditions, @context.udfs)
   
   insert: (data) ->
     @leftTable.push(data)

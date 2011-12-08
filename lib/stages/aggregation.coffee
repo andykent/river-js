@@ -10,7 +10,7 @@ exports.Aggregation = class Aggregation extends BaseStage
     @grouped = true if @groupFields?
     if @havingClause?
       @hasHavingExpression = true
-      @havingExpression = new ExpressionCompiler(@havingClause.conditions)
+      @havingExpression = new ExpressionCompiler(@havingClause.conditions, @context.udfs)
     @storedRecords = {}
     @refCounters = {}
   

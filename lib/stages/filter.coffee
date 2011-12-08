@@ -5,7 +5,7 @@
 exports.Filter = class Filter extends BaseStage
 
   constructor: (@context, @conditions) ->
-    @compiledConditions = new ExpressionCompiler(@conditions)
+    @compiledConditions = new ExpressionCompiler(@conditions, @context.udfs)
     
   insert: (data) ->
     @emit('insert', data) if @compiledConditions.exec(data)

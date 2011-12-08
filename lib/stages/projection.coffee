@@ -2,9 +2,6 @@
 functions = require('./../functions')
 aggregates = require('./../aggregates')
 nodes = require('sql-parser').nodes
-{ExpressionCompiler} = require('./../expression_compiler')
-{Field} = require('./../field')
-
 
 exports.Projection = class Projection extends BaseStage
 
