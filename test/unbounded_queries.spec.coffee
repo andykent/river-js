@@ -26,6 +26,15 @@ expectUpdates = (expectedValues...) ->
 
 abc = { a:'a', b:'b', c:'c' }
 
+err = (q, msg) ->
+  try
+    ctx = river.createContext()
+    ctx.addQuery(q)
+    should.fail('expected an error')
+  catch err
+    err.message.should.equal(msg)
+
+
 describe "Unbounded Queries", ->
   beforeEach -> expectedUpdates = seenUpdates = 0
   afterEach -> seenUpdates.should.eql(expectedUpdates)
@@ -279,7 +288,10 @@ describe "Unbounded Queries", ->
       q.on('insert', expectUpdates({foo:'a'}, {foo:'b'}))
       ctx.push('a', foo:'a')
       ctx.push('b', foo:'b')
-   
+    
+    it "throws an error for non ALL unions", ->
+      err "SELECT * FROM a UNION SELECT * FROM b", 'UNIONs are only supported with UNION ALL'
+      
   describe "metadata", ->
     it "adds a timestamp to queries", ->
       ctx = river.createContext()

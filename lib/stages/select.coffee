@@ -92,6 +92,7 @@ exports.Select = class Select extends BaseStage
   addUnions: ->
     for union in @query.unions
       unionSelect = new stages.Select(union.query, @streamManager)
+      throw new Error('UNIONs are only supported with UNION ALL') unless union.all
       unionSelect.on 'insert', (newValues) => @emit('insert', newValues)
       unionSelect.on 'remove', (oldValues) => @emit('remove', oldValues)
   
