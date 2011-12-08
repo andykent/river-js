@@ -2,7 +2,7 @@
 
 exports.Distinct = class Distinct extends BaseStage
 
-  constructor: ->
+  constructor: (@context) ->
     @seen = []
   
   insert: (data) ->

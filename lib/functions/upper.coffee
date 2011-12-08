@@ -1,1 +1,1 @@
-exports.fn = (str) -> str.toUpperCase()
+exports.fn = (str) -> str.toString().toUpperCase()

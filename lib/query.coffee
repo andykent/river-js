@@ -12,8 +12,7 @@ exports.Query = class Query extends events.EventEmitter
   # given a query string a new query object is contructed
   # first the SQL is parsed into a set of nodes which is
   # then used to construct a `QueryPlan`
-  constructor: (sqlString) ->
-    @sqlString = sqlString
+  constructor: (@sqlString) ->
     @parsedQuery = parser.parse(@sqlString)
     @id = @hash()
     @compiledQuery = new QueryPlan(@parsedQuery)
@@ -21,10 +20,10 @@ exports.Query = class Query extends events.EventEmitter
   # Calling `start` on a query registers it's event 
   # handlers to bubble stream events up and then
   # executes the compiled `QueryPlan` against a streamManager.
-  start: (streamManager) ->
+  start: (context) ->
     @compiledQuery.on 'insert', (newValues) => @emit('insert', newValues)
     @compiledQuery.on 'remove', (oldValues) => @emit('remove', oldValues)
-    @compiledQuery.start(streamManager)
+    @compiledQuery.start(context)
     
   stop: ->    
     @compiledQuery.stop()

@@ -2,7 +2,7 @@
 
 exports.Limit = class Limit extends BaseStage
 
-  constructor: (limit) ->
+  constructor: (@context, limit) ->
     @limit = limit.value
     @passed = 0
   

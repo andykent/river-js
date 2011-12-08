@@ -16,7 +16,8 @@ nodes = require('sql-parser').nodes
 # for long code paths.
 exports.Select = class Select extends BaseStage
   
-  constructor: (@query, @streamManager) ->
+  constructor: (@context, @query) ->
+    @context.streamManager
     @source = @query.source
     @build()
   
@@ -37,7 +38,7 @@ exports.Select = class Select extends BaseStage
   # used to track where the tail of this chain is so we can easily add
   # more Stages to the end of a plan.
   build: ->
-    @fields = Field.fieldListFromNodes(@query.fields, @isWindowed())
+    @fields = Field.fieldListFromNodes(@context, @query.fields, @isWindowed())
     @lastStage = @addSource()
     @addMinifier()
     @addRepeater() if @isWindowed()
@@ -48,7 +49,7 @@ exports.Select = class Select extends BaseStage
     @addDistinct() if @query.distinct
     @addLimit() if @query.limit
     # The output stage is a specal case which bubbles the final events up to the `Query`
-    @output = new stages.Output()
+    @output = new stages.Output(@context)
     @output.on 'insert', (newValues) => @emit('insert', newValues)
     @output.on 'remove', (oldValues) => @emit('remove', oldValues)
     @lastStage.pass(@output)
@@ -56,12 +57,12 @@ exports.Select = class Select extends BaseStage
   # The root Stage for a query will either be a Listen
   # or a SubSelect. Depending on the source.
   addSource: ->
-    @root = new stages.Source(@source, @streamManager)
+    @root = new stages.Source(@context, @source)
       
   # Minifiers take the insert stream and strip out fields
   # that aren't needed by the query.
   addMinifier: ->
-    minifier = new stages.Minifier(@query)
+    minifier = new stages.Minifier(@context, @query)
     @lastStage = @lastStage.pass(minifier)
   
   # Repeaters only get used when the `Query` is windowed.
@@ -69,9 +70,9 @@ exports.Select = class Select extends BaseStage
   # replay it on the remove stream once the conditions are met.
   addRepeater: ->
     if @source.winFn is 'length'
-      repeater = new stages.LengthRepeater(@source)
+      repeater = new stages.LengthRepeater(@context, @source)
     else
-      repeater = new stages.TimeRepeater(@source)
+      repeater = new stages.TimeRepeater(@context, @source)
     @lastStage = @lastStage.pass(repeater)
   
   # Joins connect sources together they hold in memory indexes
@@ -80,7 +81,7 @@ exports.Select = class Select extends BaseStage
   addJoins: ->
     first = true
     for join in @query.joins
-      join = new stages.Join(join, @streamManager, @root, first, @isWindowed())
+      join = new stages.Join(@context, join, @root, first, @isWindowed())
       first = false
       @lastStage = @lastStage.pass(join)
   
@@ -91,7 +92,7 @@ exports.Select = class Select extends BaseStage
   # and then forward their results.
   addUnions: ->
     for union in @query.unions
-      unionSelect = new stages.Select(union.query, @streamManager)
+      unionSelect = new stages.Select(@context, union.query)
       throw new Error('UNIONs are only supported with UNION ALL') unless union.all
       unionSelect.on 'insert', (newValues) => @emit('insert', newValues)
       unionSelect.on 'remove', (oldValues) => @emit('remove', oldValues)
@@ -100,7 +101,7 @@ exports.Select = class Select extends BaseStage
   # They compile the conditions and then only emit
   # on events that meet the conditions.
   addFilter: ->
-    filter = new stages.Filter(@query.where.conditions)
+    filter = new stages.Filter(@context, @query.where.conditions)
     @lastStage = @lastStage.pass(filter)
   
   # Aggregations take care of GROUP clauses and Agg Functions
@@ -108,25 +109,25 @@ exports.Select = class Select extends BaseStage
   # They collect and track the aggregations but only emit when
   # changes to computed values occur.
   addAggregation: ->
-    store = new stages.Aggregation(@fields, @query.group?.fields, @query.group?.having)
+    store = new stages.Aggregation(@context, @fields, @query.group?.fields, @query.group?.having)
     @lastStage = @lastStage.pass(store)
   
   # Projections take a set of `Field` expressions and emit new
   # objects that contain the correctly computed and named values
   addProjection: ->    
-    projection = new stages.Projection(@fields)
+    projection = new stages.Projection(@context, @fields)
     @lastStage = @lastStage.pass(projection)
   
   # Distincts take injest and insert stream and only
   # emit when a record that hasn't been seen before is found
   addDistinct: ->
-    distinct = new stages.Distinct()
+    distinct = new stages.Distinct(@context)
     @lastStage = @lastStage.pass(distinct)
   
   # Limits only really make sense on non-windowed queries they stop
   # emitting insert events once the limit number has been reached.
   addLimit: ->
-    limit = new stages.Limit(@query.limit.value)
+    limit = new stages.Limit(@context, @query.limit.value)
     @lastStage = @lastStage.pass(limit)
   
   stop: ->

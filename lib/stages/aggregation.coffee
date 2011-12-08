@@ -6,7 +6,7 @@ nodes = require('sql-parser').nodes
 
 exports.Aggregation = class Aggregation extends BaseStage
 
-  constructor: (@fields, @groupFields=null, @havingClause=null) ->
+  constructor: (@context, @fields, @groupFields=null, @havingClause=null) ->
     @grouped = true if @groupFields?
     if @havingClause?
       @hasHavingExpression = true

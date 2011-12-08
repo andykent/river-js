@@ -6,7 +6,10 @@ for f in availableFunctions
   functions[f] = require("./functions/#{f.toLowerCase()}").fn
 
 # fetch a function by name
-exports.get = (functionName) ->
-  f = functions[functionName.toUpperCase()]
-  throw(new Error("UNKNOWN FUNCTION: #{functionName}")) unless f
-  f
+module.exports = class FunctionCollection
+  constructor: (@udfs={}) -> null
+    
+  get: (functionName) ->
+    f = functions[functionName.toUpperCase()] or @udfs[functionName.toUpperCase()]
+    throw(new Error("UNKNOWN FUNCTION: #{functionName}")) unless f
+    f

@@ -2,7 +2,7 @@
 
 exports.TimeRepeater = class TimeRepeater extends BaseStage
 
-  constructor: (tableDef) ->
+  constructor: (@context, tableDef) ->
     @name = tableDef.name.value
     @window = tableDef.win
     @limitBy = tableDef.winFn

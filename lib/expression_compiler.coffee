@@ -1,5 +1,5 @@
 nodes = require('sql-parser').nodes
-functions = require('./functions')
+FunctionCollection = require('./functions')
 
 # ExpressionCompiler
 # ------------------
@@ -10,14 +10,15 @@ exports.ExpressionCompiler = class ExpressionCompiler
   
   # Takes the nodes the node tree that makes up this epxression
   # compiles immediately
-  constructor: (@conditions) ->
+  constructor: (@conditions, udfs={}) ->
+    @functions = new FunctionCollection(udfs)
     @usedProperties = []
     @compile(@conditions)
     
   # Evaluate the compiled expression in a given context
   # In most cases the context will be a record.
   exec: (context) ->
-    @compiledConditions(context, functions)
+    @compiledConditions(context, @functions)
   
   # The heavy lifting of compiling the expression happens here.
   # We recurse down the node tree compiling each node into a String

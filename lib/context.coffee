@@ -10,6 +10,7 @@ exports.Context = class Context
   constructor: ->
     @queryIdCounter = 1
     @queries = {}
+    @udfs = {}
     @streamManager = new StreamManager()
   
   # A convenience function for creating a new `Query` and
@@ -22,7 +23,7 @@ exports.Context = class Context
       query.destroy
       return existingQuery
     query.on('insert', insertCallback) if insertCallback
-    query.start(@streamManager)
+    query.start(this)
     @queries[query.id] = query
     query
   
@@ -50,4 +51,8 @@ exports.Context = class Context
   push: (streamName, data) ->
     @streamManager.fetch(streamName).push(data)
     true
+  
+  addFunction: (name, fn) ->
+    @udfs[name.toString().toUpperCase()] = fn
+    this
   

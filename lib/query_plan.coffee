@@ -17,8 +17,8 @@ exports.QueryPlan = class QueryPlan extends events.EventEmitter
   # Call start with a `StreamManager` to hook up
   # a `Listen` stage to push new data into the the
   # `Root` stage of this `QueryPlan`.
-  start: (streamManager) ->
-    @root = new stages.Select(@query, streamManager)
+  start: (context) ->
+    @root = new stages.Select(context, @query)
     @root.on 'insert', (newValues) => @emit('insert', newValues)
     @root.on 'remove', (oldValues) => @emit('remove', oldValues)  
   

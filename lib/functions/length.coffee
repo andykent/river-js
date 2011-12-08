@@ -1,1 +1,1 @@
-exports.fn = (str) -> str.length
+exports.fn = (str) -> str.toString().length

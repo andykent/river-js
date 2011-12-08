@@ -1,5 +1,4 @@
 nodes = require('sql-parser').nodes
-functions = require('./functions')
 aggregates = require('./aggregates')
 {ExpressionCompiler} = require('./expression_compiler')
 
@@ -16,7 +15,7 @@ exports.Field = class Field
   # an optional second argument allows you to
   # inform the field that it needs windowing support
   # this info is used when making function choices.
-  constructor: (@node, @isWindowed=false) ->
+  constructor: (@context, @node, @isWindowed=false) ->
     @star = @node.star
     unless @star
       @name = @_name()
@@ -24,8 +23,8 @@ exports.Field = class Field
   
   # `Field.fieldListFromNodes()` iterates through a Node Array and
   # wraps each Node into a Field object.
-  @fieldListFromNodes: (nodes, isWindowed=false) ->
-    (new Field(f, isWindowed) for f in nodes)
+  @fieldListFromNodes: (context, nodes, isWindowed=false) ->
+    (new Field(context, f, isWindowed) for f in nodes)
   
   # insert a record into this Field
   # the bucket is used to seperate GROUPed fields
@@ -97,12 +96,12 @@ exports.Field = class Field
     new klass(args)
     
   _compileExpression: ->
-    exp = new ExpressionCompiler(@node.field)
+    exp = new ExpressionCompiler(@node.field, @context.udfs)
     {
       insert: (record) -> exp.exec(record)
       remove: (record) -> exp.exec(record)
     }
   
   _compileFunctionArgs: () ->
-    (new ExpressionCompiler(arg) for arg in @node.field.arguments)
+    (new ExpressionCompiler(arg, @context.udfs) for arg in @node.field.arguments)
     

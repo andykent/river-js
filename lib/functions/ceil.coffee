@@ -1,1 +1,3 @@
-exports.fn = (n) -> Math.ceil(n)
+exports.fn = (n) -> 
+  n = Number(n) unless n.constructor is Number
+  Math.ceil(n)

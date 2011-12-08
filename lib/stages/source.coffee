@@ -8,16 +8,16 @@ nodes = require('sql-parser').nodes
 # A source abstracts away the difference between a
 # raw source stream and a source that is a sub-select
 exports.Source = class Source extends BaseStage
-  constructor: (subSelect, streamManager) ->
+  constructor: (@context, subSelect) ->
     if subSelect.constructor is nodes.SubSelect
       @query = subSelect.select
       @alias = subSelect.name
-      @select = new stages.Select(@query, streamManager)
+      @select = new stages.Select(@context, @query)
       @select.on 'insert', (newValues) => @emit('insert', @alised(newValues))
       @select.on 'remove', (oldValues) => @emit('remove', @alised(oldValues))
     else
       @alias = subSelect.name.value
-      @listener = new stages.Listen(streamManager, @alias)
+      @listener = new stages.Listen(@context, @alias)
       @listener.on 'data', (data) => @emit('insert', data)
   
   stop: ->

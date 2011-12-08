@@ -12,11 +12,11 @@ exports.Join = class Join extends BaseStage
   LEFT = 'leftTable'
   RIGHT = 'rightTable'
   
-  constructor: (join, streamManager, @left, @shouldAliasLeftSide, @leftSideIsWindowed) ->
+  constructor: (@context, join, @left, @shouldAliasLeftSide, @leftSideIsWindowed) ->
     @leftTable = []
     @rightTable = []
     @validJoins = []
-    @right = new stages.Source(join.right, streamManager)
+    @right = new stages.Source(@context, join.right)
     @right.on 'insert', (r) => @insertRight(r)
     @right.on 'remove', (r) => @removeRight(r)
     @right.on 'insertRemove', (i,r) => @insertRemoveRight(i,r)

@@ -3,7 +3,7 @@
 
 exports.Minifier = class Minifier extends BaseStage
 
-  constructor: (query) ->
+  constructor: (@context, query) ->
     @star = false
     @fields = []
     @discoverFields(query)

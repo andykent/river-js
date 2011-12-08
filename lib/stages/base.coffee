@@ -2,6 +2,8 @@ events = require("events")
 
 exports.BaseStage = class BaseStage extends events.EventEmitter
 
+  constructor: (@context) -> null
+  
   pass: (nextStage) ->
     @nextStage = nextStage
     @on('insert', (data) => @nextStage.insert(data))

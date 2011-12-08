@@ -8,7 +8,7 @@ nodes = require('sql-parser').nodes
 
 exports.Projection = class Projection extends BaseStage
 
-  constructor: (@fields) ->
+  constructor: (@context, @fields) ->
     @mode = null
     @hasAggregation = @fields.some((f) -> f.isAggregate())
     @aggDataChange = false

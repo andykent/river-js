@@ -4,7 +4,7 @@
 
 exports.Filter = class Filter extends BaseStage
 
-  constructor: (@conditions) ->
+  constructor: (@context, @conditions) ->
     @compiledConditions = new ExpressionCompiler(@conditions)
     
   insert: (data) ->
