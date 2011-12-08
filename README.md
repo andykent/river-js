@@ -56,6 +56,7 @@ Currently Working Things
 * `SELECT a, SUM(b) AS s FROM data GROUP BY a HAVING s > 2` - unbounded having
 * `SELECT d.foo FROM (SELECT foo FROM data) d` - aliased sub-selects
 * `SELECT * FROM a JOIN b ON a.id = b.id` - inner joins
+* `SELECT * FROM a UNION ALL SELECT * FROM b` - union's (currently only `union all`)
 
 
 Supported Functions
@@ -74,15 +75,14 @@ All objects inserted get decorated with some metadata. This gets stored in a key
 
 Planned
 -------
-* Unions - Support for SQL UNION ALL so that queries can be merged.
 * Time batching - table.batch:time(secs) so that queries can be run over batches of time rather than sliding windows.
-* Patterns - Support a syntax which allows describing patterns through time maybe like [a -> b -> c].
 * Errors - Query syntax errors are caught by the Grammer but logical errors aren't currently handled.
 * UDFs - Allow user defined functions to be mixed into a context.
 * Time functions - unix_timestamp(d), date(d), strftime(d, fmt), year(d), month(d), day(d), hour(d), minute(d), second(d) - where d is date/string/number
 
 Wishlist
 --------
+* Pattern Matching - Support a syntax which allows describing patterns through time maybe like [a -> b -> c].
 * Views - Allow Queries to be aliased as views and then used by other queries.
 * Partitions - Come up with a way to describe logical data partitions so multiple nodes/cores can handle different events.
 * HA Server Wrapper - Wrap River in a network server so that it can be used remotely.

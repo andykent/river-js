@@ -42,6 +42,7 @@ exports.Select = class Select extends BaseStage
     @addMinifier()
     @addRepeater() if @isWindowed()
     @addJoins()
+    @addUnions()
     @addFilter() if @query.where
     if @hasAggregation() then @addAggregation() else @addProjection()
     @addDistinct() if @query.distinct
@@ -82,6 +83,17 @@ exports.Select = class Select extends BaseStage
       join = new stages.Join(join, @streamManager, @root, first, @isWindowed())
       first = false
       @lastStage = @lastStage.pass(join)
+  
+  # Unions push the output of two queries on to the same 
+  # insert and remove streams. Because we only support
+  # UNION ALL and not UNION he queries are completely
+  # independant so we simply setup the UNION ALL queries 
+  # and then forward their results.
+  addUnions: ->
+    for union in @query.unions
+      unionSelect = new stages.Select(union.query, @streamManager)
+      unionSelect.on 'insert', (newValues) => @emit('insert', newValues)
+      unionSelect.on 'remove', (oldValues) => @emit('remove', oldValues)
   
   # Filters handle the WHERE part of a query.
   # They compile the conditions and then only emit

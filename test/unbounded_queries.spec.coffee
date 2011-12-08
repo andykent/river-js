@@ -271,6 +271,14 @@ describe "Unbounded Queries", ->
       ctx.push('b', id:2)
       ctx.push('c', id:1)
       ctx.push('c', id:2)
+      
+  describe "UNION syntax", ->
+    it "Compiles UNION ALL queries", ->
+      ctx = river.createContext()
+      q = ctx.addQuery "SELECT * FROM a UNION ALL SELECT * FROM b"
+      q.on('insert', expectUpdates({foo:'a'}, {foo:'b'}))
+      ctx.push('a', foo:'a')
+      ctx.push('b', foo:'b')
    
   describe "metadata", ->
     it "adds a timestamp to queries", ->
