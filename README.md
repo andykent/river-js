@@ -73,11 +73,19 @@ All objects inserted get decorated with some metadata. This gets stored in a key
     { ts: new Date(), src: 'mystream', uuid: '8188540d-418c-49f2-a231-d4dc86490f18' }
 
 
+User Defined Functions (UDFs)
+-----------------------------
+For security reasons River queries cannot execute arbitrary JavaScript however it is possible to extend functionality by writing UDFs. These can be useful for performing custom data parsing or more complex logic. Below is an example of a simple UDF...
+
+    ctx = river.createContext()
+    ctx.addFunction('SQUARE', (v) -> v * v )
+    ctx.addQuery('SELECT SQUARE(2) FROM data')
+
+
 Planned
 -------
 * Time batching - table.batch:time(secs) so that queries can be run over batches of time rather than sliding windows.
 * Errors - Query syntax errors are caught by the Grammer but logical errors aren't currently handled.
-* UDFs - Allow user defined functions to be mixed into a context.
 * Time functions - unix_timestamp(d), date(d), strftime(d, fmt), year(d), month(d), day(d), hour(d), minute(d), second(d) - where d is date/string/number
 
 Wishlist
