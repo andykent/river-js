@@ -102,7 +102,7 @@ Command Line Tools
 River ships with 2 simple command line tools `river-csv` and `river-zmq` these are useful for doing little on the fly data queries. They work like so...
 
 * `river-csv myfile.csv "SELECT * FROM file"` - expects a path to a CSV file with headers followed by a query, runs the query against the file and emits a new CSV file on stdout.
-* `river-zmq tcp://server:port "SELECT * FROM channel" [i|r|ir]` - Requires ZeroMQ to be installed along with the node zmq package. Expects a zmq publisher socket address followed by a  query to run. Emits events as JSON to stdout. An optional 3 argument can be used to specify if you would like to get results from the 'insert' stream (default), 'remove' stream, or both - use the flags 'i', 'r' or 'ir' respectively.
+* `river-zmq tcp://server:port "SELECT * FROM channel" [i|r|ir]` - Requires ZeroMQ to be installed along with the node zmq package. Expects a zmq publisher socket address followed by a query to run. Emits events as JSON to stdout. An optional 3 argument can be used to specify if you would like to get results from the 'insert' stream (default), 'remove' stream, or both - use the flags 'i', 'r' or 'ir' respectively.
 
 
 Known Issues
