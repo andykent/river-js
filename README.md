@@ -65,6 +65,8 @@ Aggregates: `AVG`, `COUNT`, `SUM`, `MIN`, `MAX`
 
 Standard: `ABS`, `CEIL`, `CONCAT`, `FLOOR`, `IF`, `LENGTH`, `LOG`, `LOWER`, `ROUND`, `SUBSTR`, `UPPER`, `UNESCAPE`
 
+Date/Time: `DATE(d, fmt)`, `STRFTIME(d, fmt)`, `YEAR(d)`, `MONTH(d)`, `DAY(d)`, `HOUR(d)`, `MINUTE(d)`, `SECOND(d)` - where `d` is date/string/number
+
 
 Metadata
 --------
@@ -86,7 +88,6 @@ Planned
 -------
 * Time batching - table.batch:time(secs) so that queries can be run over batches of time rather than sliding windows.
 * Errors - Query syntax errors are caught by the Grammer but logical errors aren't currently handled.
-* Time functions - unix_timestamp(d), date(d), strftime(d, fmt), year(d), month(d), day(d), hour(d), minute(d), second(d) - where d is date/string/number
 
 Wishlist
 --------
