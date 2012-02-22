@@ -89,6 +89,7 @@ Planned
 * Time batching - table.batch:time(secs) so that queries can be run over batches of time rather than sliding windows.
 * Errors - Query syntax errors are caught by the Grammer but logical errors aren't currently handled.
 
+
 Wishlist
 --------
 * Pattern Matching - Support a syntax which allows describing patterns through time maybe like [a -> b -> c].
