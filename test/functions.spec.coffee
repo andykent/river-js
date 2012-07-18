@@ -89,11 +89,11 @@ describe "SQL Functions", ->
 
   describe "DATE()", ->
     it "parses a time in DB format", ->
-      f.get('DATE')('2012-02-21 12:13:14').should.eql(new Date(Date.parse('2012-02-21 12:13:14')))
+      date = f.get('DATE')('2012-02-21 12:13:14').should.eql(Date.parse('2012-02-21 12:13:14'))
     it "parses a time in custom format", ->
-      f.get('DATE')('21/02/2012@12:13', 'd/M/y@H:m').should.eql(new Date(Date.parse('2012-02-21 12:13:00')))
+      f.get('DATE')('21/02/2012@12:13', 'd/M/y@H:m').should.eql(Date.parse('2012-02-21 12:13:00'))
     it "parses a number as a milliseconds since epoch", ->
-      f.get('DATE')(1234567890).should.eql(new Date(1234567890))
+      f.get('DATE')(1234567890).should.eql(1234567890)
 
   describe "STRFTIME()", ->
     it "formats a date", ->

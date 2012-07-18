@@ -1,4 +1,4 @@
 test:
-	./node_modules/.bin/mocha --require should
+	./node_modules/.bin/mocha --compilers coffee:coffee-script --require should
 
 .PHONY: test

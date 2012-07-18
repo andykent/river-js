@@ -1,4 +1,5 @@
 river = require('../lib/river')
+assert = require('assert')
 
 expectedUpdates = 0
 seenUpdates = 0
@@ -7,7 +8,7 @@ withoutMeta = (obj) ->
   delete obj._ if obj._
   obj[k] = withoutMeta(v) for k, v of obj when typeof v is 'object'
   obj
-    
+
 expectUpdate = (expectedValues) ->
   expectedUpdates += 1
   (newValues) ->
@@ -38,7 +39,7 @@ err = (q, msg) ->
 describe "Unbounded Queries", ->
   beforeEach -> expectedUpdates = seenUpdates = 0
   afterEach -> seenUpdates.should.eql(expectedUpdates)
-  
+
   it "Compiles 'select *' queries", ->
     ctx = river.createContext()
     q = ctx.addQuery 'SELECT * FROM data'
@@ -56,14 +57,14 @@ describe "Unbounded Queries", ->
     q = ctx.addQuery "SELECT a AS c FROM data"
     q.on('insert', expectUpdate({c:'a'}))
     ctx.push('data', abc)
-    
+
   it "Compiles 'select * WHERE' queries", ->
     ctx = river.createContext()
     q = ctx.addQuery "SELECT * FROM data WHERE foo = 1"
     q.on('insert', expectUpdate({foo:1}))
     ctx.push('data', foo:2)
     ctx.push('data', foo:1)
-    
+
   it "Compiles 'LIKE' queries", ->
     ctx = river.createContext()
     q = ctx.addQuery "SELECT * FROM data WHERE foo LIKE '%bar%'"
@@ -81,7 +82,7 @@ describe "Unbounded Queries", ->
     ctx.push('data', foo:null)
     ctx.push('data', foo:2)
     ctx.push('data', foo:null)
-    
+
   it "Compiles 'is not' queries in lowercase", ->
     ctx = river.createContext()
     q = ctx.addQuery "SELECT * FROM data WHERE foo is not null"
@@ -90,27 +91,27 @@ describe "Unbounded Queries", ->
     ctx.push('data', foo:null)
     ctx.push('data', foo:2)
     ctx.push('data', foo:null)
-    
+
   it "Compiles 'select * WHERE AND' queries", ->
     ctx = river.createContext()
     q = ctx.addQuery "SELECT * FROM data WHERE foo = 1 AND bar = 2"
     q.on('insert', expectUpdate({foo:1, bar:2}))
     ctx.push('data', foo:1, bar:1)
     ctx.push('data', foo:1, bar:2)
-    
+
   it "Compiles 'select * WHERE AND nested' queries", ->
     ctx = river.createContext()
     q = ctx.addQuery "SELECT * FROM data WHERE foo = 1 AND (bar = 2 OR foo = 1)"
     q.on('insert', expectUpdate({foo:1, bar:1}))
     ctx.push('data', foo:1, bar:1)
-    
+
   it "Compiles 'select with limit' queries", ->
     ctx = river.createContext()
     q = ctx.addQuery "SELECT * FROM data LIMIT 1"
     q.on('insert', expectUpdate({foo:1, bar:1}))
     ctx.push('data', foo:1, bar:1)
     ctx.push('data', foo:2, bar:2)
-    
+
   it "Compiles 'select with count(field)' queries", ->
     ctx = river.createContext()
     q = ctx.addQuery "SELECT COUNT(bar) FROM data"
@@ -134,14 +135,14 @@ describe "Unbounded Queries", ->
     ctx.push('data', foo:'a', bar:1)
     ctx.push('data', foo:'b', bar:1)
 
-    
+
   it "Compiles 'select with sum(field)' queries", ->
     ctx = river.createContext()
     q = ctx.addQuery "SELECT SUM(foo) AS foo_count FROM data"
     q.on('insert', expectUpdates({foo_count:2},{foo_count:4}))
     ctx.push('data', foo:2, bar:1)
     ctx.push('data', foo:2, bar:1)
-    
+
   it "Compiles 'select with min(field)' queries", ->
     ctx = river.createContext()
     q = ctx.addQuery "SELECT MIN(foo) AS foo_min FROM data"
@@ -151,14 +152,14 @@ describe "Unbounded Queries", ->
     ctx.push('data', foo:3)
     ctx.push('data', foo:4)
     ctx.push('data', foo:2)
-    
+
   it "Compiles 'select with avg(field)' queries", ->
     ctx = river.createContext()
     q = ctx.addQuery "SELECT AVG(foo) AS foo_avg FROM data"
     q.on('insert', expectUpdates({foo_avg:3},{foo_avg:2}))
     ctx.push('data', foo:3)
     ctx.push('data', foo:1)
-    
+
   it "Compiles 'select DISTINCT' queries", ->
     ctx = river.createContext()
     q = ctx.addQuery "SELECT DISTINCT foo FROM data"
@@ -166,39 +167,39 @@ describe "Unbounded Queries", ->
     ctx.push('data', foo:1, bar:1)
     ctx.push('data', foo:1, bar:2)
     ctx.push('data', foo:2, bar:1)
-  
+
   describe "Functions", ->
     it "Compiles Functions", ->
       ctx = river.createContext()
       q = ctx.addQuery "SELECT LENGTH(foo) as foo_l FROM data"
       q.on('insert', expectUpdate({foo_l:3}))
       ctx.push('data', foo:'bar')
-    
+
     it "Compiles Functions in lower case", ->
       ctx = river.createContext()
       q = ctx.addQuery "SELECT length(foo) as foo_l FROM data"
       q.on('insert', expectUpdate({foo_l:3}))
       ctx.push('data', foo:'bar')
-    
+
     it "Compiles nested Functions", ->
       ctx = river.createContext()
       q = ctx.addQuery "SELECT MAX(NUMBER(foo)) as bar FROM data"
       q.on('insert', expectUpdate({bar:3}))
       ctx.push('data', foo:'3')
-    
+
     it "Compiles Functions in conditions", ->
       ctx = river.createContext()
       q = ctx.addQuery "SELECT foo FROM data WHERE LENGTH(foo) > 2"
       q.on('insert', expectUpdate({foo:'yes'}))
       ctx.push('data', foo:'no')
       ctx.push('data', foo:'yes')
-    
+
     it "Compiles IF conditions", ->
       ctx = river.createContext()
       q = ctx.addQuery "SELECT IF(LENGTH(foo) = 3, 1, 2) AS f FROM data"
       q.on('insert', expectUpdate({f:1}))
       ctx.push('data', foo:'yes')
-  
+
     it "Compiles Expressions in place of fields", ->
       ctx = river.createContext()
       q = ctx.addQuery "SELECT foo+1, foo FROM data"
@@ -210,20 +211,20 @@ describe "Unbounded Queries", ->
       q = ctx.addQuery "SELECT foo, FLOOR(LENGTH(foo)+1) AS x FROM data"
       q.on('insert', expectUpdate({foo:'1', 'x':2}))
       ctx.push('data', foo:'1')
-  
+
   describe "Aggregations", ->
     it "Compiles nested expressions in aggregates", ->
       ctx = river.createContext()
       q = ctx.addQuery "SELECT foo, MIN(LENGTH(foo)+1) AS x FROM data"
       q.on('insert', expectUpdate({foo:'1', 'x':2}))
       ctx.push('data', foo:'1')
-  
+
     it "Compiles nested object properties using dot syntax", ->
       ctx = river.createContext()
       q = ctx.addQuery "SELECT LENGTH(x.y.z) AS foo FROM data"
       q.on('insert', expectUpdate({foo:3}))
       ctx.push('data', {x:{y:{z:'bar'}}})
-  
+
     it "Compiles 'select with group' queries", ->
       ctx = river.createContext()
       q = ctx.addQuery "SELECT foo, SUM(1) FROM data GROUP BY foo"
@@ -232,7 +233,7 @@ describe "Unbounded Queries", ->
       ctx.push('data', foo:'a', bar:1)
       ctx.push('data', foo:'b', bar:1)
       ctx.push('data', foo:'a', bar:1)
-  
+
     it "Compiles 'select with group and having' queries", ->
       ctx = river.createContext()
       q = ctx.addQuery "SELECT foo, SUM(1) AS s FROM data GROUP BY foo HAVING s > 1"
@@ -240,7 +241,7 @@ describe "Unbounded Queries", ->
       ctx.push('data', foo:'a', bar:1)
       ctx.push('data', foo:'b', bar:1)
       ctx.push('data', foo:'a', bar:1)
-    
+
   describe "sub-selects", ->
     it "Compiles unnamed sub-selects", ->
       ctx = river.createContext()
@@ -253,7 +254,7 @@ describe "Unbounded Queries", ->
       q = ctx.addQuery "SELECT d.foo FROM (SELECT * FROM data) d"
       q.on('insert', expectUpdate({'`d.foo`':'bar'}))
       ctx.push('data', foo:'bar')
-    
+
   describe "JOIN syntax", ->
     it "Compiles equality joins across 2 sources (left side seen first)", ->
       ctx = river.createContext()
@@ -270,7 +271,7 @@ describe "Unbounded Queries", ->
       ctx.push('b', id:1)
       ctx.push('b', id:2)
       ctx.push('a', id:2)
-      
+
     it "Compiles equality joins across 3 sources", ->
       ctx = river.createContext()
       q = ctx.addQuery "SELECT * FROM a JOIN b ON a.id = b.id JOIN c ON b.id = c.id"
@@ -280,7 +281,7 @@ describe "Unbounded Queries", ->
       ctx.push('b', id:2)
       ctx.push('c', id:1)
       ctx.push('c', id:2)
-      
+
   describe "UNION syntax", ->
     it "Compiles UNION ALL queries", ->
       ctx = river.createContext()
@@ -288,27 +289,26 @@ describe "Unbounded Queries", ->
       q.on('insert', expectUpdates({foo:'a'}, {foo:'b'}))
       ctx.push('a', foo:'a')
       ctx.push('b', foo:'b')
-    
+
     it "throws an error for non ALL unions", ->
       err "SELECT * FROM a UNION SELECT * FROM b", 'UNIONs are only supported with UNION ALL'
-      
+
   describe "metadata", ->
     it "adds a timestamp to queries", ->
       ctx = river.createContext()
       q = ctx.addQuery 'SELECT * FROM data'
-      q.on 'insert', (data) -> data._.ts.should.be.instanceof(Date)
+      q.on 'insert', (data) -> assert.ok(data._.ts.constructor is Date)
       ctx.push('data', abc)
-  
+
     it "adds a UUID to queries", ->
       ctx = river.createContext()
       q = ctx.addQuery 'SELECT * FROM data'
       q.on 'insert', (data) -> data._.uuid.should.be.a('string')
       ctx.push('data', abc)
-  
+
     it "adds a source to queries", ->
       ctx = river.createContext()
       q = ctx.addQuery 'SELECT * FROM data'
       q.on 'insert', (data) -> data._.src.should.eql('data')
       ctx.push('data', abc)
-  
-  
+
