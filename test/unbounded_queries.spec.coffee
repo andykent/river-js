@@ -272,6 +272,14 @@ describe "Unbounded Queries", ->
       ctx.push('b', id:2)
       ctx.push('a', id:2)
 
+    it "allows aliased field selections on JOIN queries", ->
+      ctx = river.createContext()
+      q = ctx.addQuery "SELECT a.id AS joined_a FROM a JOIN b ON a.id = b.id"
+      q.on('insert', expectUpdate({ joined_a: 2 }))
+      ctx.push('a', id:1)
+      ctx.push('a', id:2)
+      ctx.push('b', id:2)
+
     it "Compiles equality joins across 3 sources", ->
       ctx = river.createContext()
       q = ctx.addQuery "SELECT * FROM a JOIN b ON a.id = b.id JOIN c ON b.id = c.id"

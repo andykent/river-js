@@ -113,6 +113,7 @@ Known Issues
 * Having clauses only work with aliased columns not in place aggregation functions.
 * There is currently no support for OUTER joins.
 * Some queries, specifically unwindowed JOIN's, can cause memory leaks.
+* JOINed streams aren't minified unless a sub-select is used to restrict fields.
 
 
 Optimisations
