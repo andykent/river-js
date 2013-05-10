@@ -114,6 +114,7 @@ Known Issues
 * There is currently no support for OUTER joins.
 * Some queries, specifically unwindowed JOIN's, can cause memory leaks.
 * JOINed streams aren't minified unless a sub-select is used to restrict fields.
+* JOINs maintain an index for check inclusion on equality joins (a.id = b.id) but a table scan is still needed for matching records.
 
 
 Optimisations
@@ -122,6 +123,5 @@ Optimisations
 * multiple queries in a context over the same stream windows could share events
 * queries with sub-selects might be able to share common data
 * JOINs have their own data structures. Could they share with repeaters to avoid duplicate objects?
-* JOINs use a loop in all cases but for equality joins (a.id = b.id) we could maintain an index.
 * JOINs are probably sub optimal in almost every way.
 

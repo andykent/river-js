@@ -4,22 +4,22 @@ FunctionCollection = require('./functions')
 # ExpressionCompiler
 # ------------------
 # Takes a set of nodes that form an expression and compiles
-# them into a JS Function which can later be called against 
+# them into a JS Function which can later be called against
 # a record to evaluate a result.
 exports.ExpressionCompiler = class ExpressionCompiler
-  
+
   # Takes the nodes the node tree that makes up this epxression
   # compiles immediately
   constructor: (@conditions, udfs={}) ->
     @functions = new FunctionCollection(udfs)
     @usedProperties = []
     @compile(@conditions)
-    
+
   # Evaluate the compiled expression in a given context
   # In most cases the context will be a record.
   exec: (context) ->
     @compiledConditions(context, @functions)
-  
+
   # The heavy lifting of compiling the expression happens here.
   # We recurse down the node tree compiling each node into a String
   # then using the awesome dynamic nature of JS we create a new JS
@@ -28,7 +28,7 @@ exports.ExpressionCompiler = class ExpressionCompiler
     compiledString = @compileNode(condition)
     compiledFunction = new Function('c', 'f', "return #{compiledString}")
     @compiledConditions = compiledFunction
-  
+
   # takes a node and decides whether it's an operator or a literal
   # at the end of a branch.
   compileNode: (node) ->
@@ -36,7 +36,7 @@ exports.ExpressionCompiler = class ExpressionCompiler
       @compileOperator(node)
     else
       @literalConversion(node)
-  
+
   # Recurse down through the node tree
   # compiling operators into strings as we go.
   # each operator gets wrapped in parens so that
@@ -50,11 +50,11 @@ exports.ExpressionCompiler = class ExpressionCompiler
       else
         op = @conditionConversion(condition.operation)
         ['(', left, op, right, ')'].join(' ')
-    
+
   # Take a non Op node and create a JS string that can
   # get the required value from the current context (c)
   literalConversion: (node) ->
-    switch node.constructor 
+    switch node.constructor
       when nodes.LiteralValue
         @usedProperties.push(node.values)
         selector = ("['#{v}']" for v in node.values).join('')
@@ -71,7 +71,7 @@ exports.ExpressionCompiler = class ExpressionCompiler
           'null'
         else
           val
-    
+
   # This is propably not the right place for this but until
   # we add RLIKE support its an edge case.
   likeRegex: (node) ->
@@ -80,7 +80,7 @@ exports.ExpressionCompiler = class ExpressionCompiler
     # replace % sign with wildcard regex
     r = r.replace(/%/g, '.+')
     "/^#{r}$/"
-  
+
   # Convert SQL operators into their JS equiv
   conditionConversion: (op) ->
     switch op.toUpperCase()
@@ -91,4 +91,16 @@ exports.ExpressionCompiler = class ExpressionCompiler
       when 'IS'     then '==='
       else
         op
-  
+
+  # check if this expression is of the form 'x = y'
+  # returns true if so, otherwise false
+  isSimpleEquality: ->
+    @conditions.operation is '=' and
+    @conditions.left.constructor is nodes.LiteralValue and
+    @conditions.right.constructor is nodes.LiteralValue
+
+  get: (side, data) ->
+    return null unless @conditions[side].constructor is nodes.LiteralValue
+    for v in @conditions[side].values when data
+      data = data[v]
+    data

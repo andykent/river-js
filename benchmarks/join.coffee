@@ -1,4 +1,4 @@
-iterations = 1000000
+iterations = 100000
 
 river = require('../lib/river')
 
@@ -6,7 +6,13 @@ start = new Date()
 
 ctx = river.createContext()
 
-ctx.addQuery "SELECT * FROM random WHERE n > 0.599 AND n < 0.6", (newValues) -> null
+sql = """
+  SELECT * FROM random_1.win:length(1000)
+    JOIN random_2.win:length(1000)
+    ON random_1.n = random_2.n
+"""
+
+ctx.addQuery sql, (newValues) -> null
 
 endInit = new Date()
 
@@ -16,7 +22,9 @@ console.log("#{initTime} milliseconds to initialize context & query.")
 
 startIts = new Date()
 
-ctx.push('random', n: Math.random()) for i in [1..iterations]
+for i in [1..iterations]
+  ctx.push('random_1', n: Math.random())
+  ctx.push('random_2', n: Math.random())
 
 end = new Date()
 
